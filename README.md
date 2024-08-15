@@ -84,6 +84,18 @@ DuckHunt Reloaded is the rethinking of the old classic DuchHunt
 
 ### Wireframes
 
+## Menu
+
+![Main Menu](documentation/img/menu.png)
+
+## Instructions
+
+![Instructions](documentation/img/instructions.png)
+
+## End Game
+
+![End Game](documentation/img/instructions.png)
+
 
 ## Features
 
@@ -164,4 +176,3 @@ To clone the Nmyhi/cogniCraft:
 
   
 ###  Acknowledgments
-
