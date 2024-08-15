@@ -52,6 +52,14 @@ DuckHunt Reloaded is the rethinking of the old classic DuchHunt
 
 ### User Stories
 
+* As a player, I want to see the main menu.
+* As a player, I want to start a new game.
+* As a player, I want to view the leaderboard.
+* As a player, I want to shoot ducks that fly across the screen.
+* As a player, I want to experience a variety of environments (e.g., forest, swamp, winter landscape), so that the game remains visually engaging and varied.
+* As a player, I want to save my score on the leaderboard.
+* As a player, I want to have instructions. 
+
 #### Client Goals
 
 
