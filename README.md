@@ -84,15 +84,15 @@ DuckHunt Reloaded is the rethinking of the old classic DuchHunt
 
 ### Wireframes
 
-## Menu
+#### Menu
 
 ![Main Menu](documentation/img/menu.png)
 
-## Instructions
+#### Instructions
 
 ![Instructions](documentation/img/instructions.png)
 
-## End Game
+#### End Game
 
 ![End Game](documentation/img/instructions.png)
 
