@@ -45,3 +45,18 @@ export async function getLeaderboard() {
   // Return the leaderboard data for display
   return leaderboard;
 }
+
+// Function to test Firestore connection by writing a test document
+export async function testFirestoreConnection() {
+    try {
+      const docRef = await addDoc(collection(db, "testCollection"), {
+        testField: "This is a test document",
+        timestamp: new Date()
+      });
+      console.log("Test document written with ID: ", docRef.id);
+      return docRef.id;
+    } catch (e) {
+      console.error("Error writing test document: ", e);
+      throw e;
+    }
+  }
