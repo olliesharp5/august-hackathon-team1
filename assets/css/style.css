@@ -2,6 +2,7 @@ body {
     font-family: "Jersey 10", sans-serif;
     font-weight: 400;
     font-style: normal;
+    background-color: black;
 }
 
 .menu-container {
@@ -12,4 +13,19 @@ body {
 
 #main-title {
     font-size: 10em;
+    color: aqua;
+}
+
+#top-score {
+    font-size: 5em;
+    color: #a87d32;
+}
+
+button {
+    background-color: #a87d32;
+    font-family: "Jersey 10", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 2em;
+    margin: 5px;
 }
