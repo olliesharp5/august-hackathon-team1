@@ -140,27 +140,30 @@ async function leaderBoard() {
  * Sets up the initial game state and starts the first level
  **/
 function playGame() {
-    const gameState = {
-        level: 1,
-        remainingDucks: 0,
-        misses: 0,
-        maxMisses: 3,
-        score: 0
-    };
-    
-    let gameContent = `
-    <main>
-    <canvas id="game-area" width="800" height="600"></canvas>
-    <p>Score: <span id="score">0</span></p>
-    <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
-    </main>
-    `;
-    document.body.innerHTML = gameContent;
 
-    const canvas = document.getElementById('game-area');
-    const ctx = canvas.getContext('2d'); 
+  const gameArea = document.getElementById('game-area');
 
-    startLevel(gameState, ctx);
+  const gameState = {
+      level: 1,
+      remainingDucks: 0,
+      misses: 0,
+      maxMisses: 3,
+      score: 0
+  };
+  
+  let gameContent = `
+  <main>
+  <canvas id="game-area" width="800" height="600"></canvas>
+  <p>Score: <span id="score">0</span></p>
+  <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
+  </main>
+  `;
+  gameArea.innerHTML = gameContent;
+
+  const canvas = document.getElementById('game-area');
+  const ctx = canvas.getContext('2d'); 
+
+  startLevel(gameState, ctx);
 }
 
 
