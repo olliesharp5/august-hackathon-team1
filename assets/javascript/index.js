@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
       music.pause();
       musicControls.innerHTML = playIcon;
     }
-  }
+  })
 
   // Set volume to 50% on load
   music.volume = 0.5;
