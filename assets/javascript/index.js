@@ -32,7 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
       music.pause();
       musicControls.innerHTML = playIcon;
     }
-  })
+  }
+);
 
   // Set volume to 50% on load
   music.volume = 0.5;
@@ -111,11 +112,13 @@ function playGame() {
   };
   
   let gameContent = `
+
   <canvas id="gameCanvas" width="800" height="600"></canvas>
   <p>Score: <span id="score">0</span></p>
   <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
   `;
   gameArea.innerHTML = gameContent;
+
 
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d'); 
