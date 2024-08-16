@@ -159,7 +159,7 @@ function animateDuck(duck, gameState, ctx) {
             if (duck.bounces >= 3) {
                 // Duck leaves the area
                 clearInterval(interval);
-                handleMiss(gameState);
+                gameState.remainingDucks --;
             }
         }
 
@@ -178,23 +178,31 @@ function animateDuck(duck, gameState, ctx) {
 function drawDuck(duck, ctx) {
     const duckSprite = new Image();
     duckSprite.src = 'assets/images/sprites/duck-sprite.png';
-    ctx.clearRect(duck.x, duck.y, duck.spriteWidth, duck.spriteHeight);  // Clear old position
+    // Save the current context state
+    ctx.save();
 
     // Calculate the source x position of the current frame in the sprite sheet
     const srcX = duck.currentFrame * duck.spriteWidth;
 
+    // Flip the duck horizontally ONLY if it's moving to the left
     if (duck.direction === -1) {
-        
+        ctx.translate(duck.x + duck.size, duck.y);
+        ctx.scale(-1, 1); 
+    } else {
+        ctx.translate(duck.x, duck.y); 
     }
 
-    // Draw the current frame
+    // Draw the duck at its new position
     ctx.drawImage(
         duckSprite,            // Image source
         srcX, 0,               // Source x, y (top-left corner of the frame in the sprite sheet)
         duck.spriteWidth, duck.spriteHeight, // Source width, height (size of the frame)
-        duck.x, duck.y,        // Destination x, y (where to draw on the canvas)
+        0, 0,                  // Destination x, y (already translated, so use 0, 0)
         duck.size, duck.size   // Destination width, height (size on the canvas)
     );
+
+    // Restore the context to its original state
+    ctx.restore();
 }
 
 
