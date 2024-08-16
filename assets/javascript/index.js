@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-const canvas = document.getElementById('gameCanvas');
+const canvas = document.getElementById('game-area');
 const ctx = canvas.getContext('2d'); 
 
 /**
