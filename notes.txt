@@ -1,0 +1,49 @@
+/**
+ * This function does:
+ * Spawns a duck in the game area
+ * Handles duck movement
+ * Adds event listener for shooting the duck
+ */
+function spawnDuck() {
+    const canvas = document.getElementById('game-area');
+    const ctx = canvas.getContext('2d');
+
+    let duckX = 0;
+    let duckY = Math.random() * (canvas.height - 50);
+    let duckSpeed = 3 + level;
+
+    function moveDuck() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(duckX, duckY, 50, 50);
+        duckX += duckSpeed;
+
+        if (duckX < canvas.width) {
+            requestAnimationFrame(moveDuck);
+        } else {
+            missDuck();
+        }
+    }
+
+    canvas.addEventListener('click', function shootDuck(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        if (x >= duckX && x <= duckX + 50 && y >= duckY && y <= duckY + 50) {
+            score += 10;
+            document.getElementById('score').textContent = score;
+            remainingDucks--;
+
+            if (remainingDucks > 0) {
+                duckX = 0;
+                duckY = Math.random() * (canvas.height - 50);
+                requestAnimationFrame(moveDuck);
+            } else {
+                levelUp();
+            }
+        }
+    }, { once: true });
+
+    moveDuck();
+}

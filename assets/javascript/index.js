@@ -35,13 +35,6 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// gameState variables
-let level = 0;
-let remainingDucks = 0;
-let misses = 0;
-let maxMisses = 3;
-let score = 0;
-
 // Menu
 // Calls playGame() or leaderBoard()
 document.addEventListener("DOMContentLoaded", function () {
@@ -59,25 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-/**
- * This function does:
- * Set the level variable
- * Modify the DOM
- * call the startLevel function
- **/
-function playGame() {
-    // swap the body content to canvas
-    let gameContent = `
-    <main>
-    <canvas id="game-area" width="800" height="600"></canvas>
-    <p>Score: <span id="score">0</span></p>
-    <p>Misses: <span id="misses">0</span>/<span id="max-misses">${maxMisses}</span></p>
-    </main>
-    `;
-    const gameArea = document.getElementById("game-area");
-    gameArea.innerHTML = gameContent;
-    startLevel();
-}
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d'); 
 
 /**
  * This function does:
@@ -98,88 +74,56 @@ async function leaderBoard() {
     document.querySelector('button[data-type="play"]').addEventListener('click', playGame);
 }
 
+
 /**
- * This function does:
- * start the first level
- * set the variables
+ * Sets up the initial game state and starts the first level
  **/
-function startLevel() {
-    level = 1;
-    remainingDucks = 3;
-    misses = 0;
-    maxMisses = 3;
-    score = 0;
+function playGame() {
+    const gameState = {
+        level: 1,
+        remainingDucks: 0,
+        misses: 0,
+        maxMisses: 3,
+        score: 0
+    };
     
-    document.getElementById("score").textContent = score;
-    document.getElementById("misses").textContent = misses;
+    let gameContent = `
+    <main>
+    <canvas id="game-area" width="800" height="600"></canvas>
+    <p>Score: <span id="score">0</span></p>
+    <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
+    </main>
+    `;
+    const gameArea = document.getElementById("game-area");
+    gameArea.innerHTML = gameContent;
 
-    spawnDuck();
+    startLevel(gameState);
 }
+
 
 /**
- * This function does:
- * Spawns a duck in the game area
- * Handles duck movement
- * Adds event listener for shooting the duck
- */
-function spawnDuck() {
-    const canvas = document.getElementById('game-area');
-    const ctx = canvas.getContext('2d');
+ * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
+ **/
+function startLevel(gameState) {
+    gameState.misses = 0;  // Reset misses
+    gameState.remainingDucks = gameState.level * 3;  // Number of ducks per level
 
-    let duckX = 0;
-    let duckY = Math.random() * (canvas.height - 50);
-    let duckSpeed = 3 + level;
-
-    function moveDuck() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(duckX, duckY, 50, 50);
-        duckX += duckSpeed;
-
-        if (duckX < canvas.width) {
-            requestAnimationFrame(moveDuck);
-        } else {
-            missDuck();
-        }
-    }
-
-    canvas.addEventListener('click', function shootDuck(event) {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-
-        if (x >= duckX && x <= duckX + 50 && y >= duckY && y <= duckY + 50) {
-            score += 10;
-            document.getElementById('score').textContent = score;
-            remainingDucks--;
-
-            if (remainingDucks > 0) {
-                duckX = 0;
-                duckY = Math.random() * (canvas.height - 50);
-                requestAnimationFrame(moveDuck);
-            } else {
-                levelUp();
-            }
-        }
-    }, { once: true });
-
-    moveDuck();
+    spawnDucks(gameState.level, gameState);
 }
 
-/**
- * This function does:
- * Handles when the player misses a duck
- */
-function missDuck() {
-    misses++;
-    document.getElementById('misses').textContent = misses;
 
-    if (misses >= maxMisses) {
-        gameOver();
-    } else {
-        spawnDuck();
+
+function spawnDucks(numDucks, gameState) {
+    for (let i = 0; i < numDucks; i++) {
+        const duck = createDuck(gameState.level);
+        animateDuck(duck, gameState);
     }
 }
+
+
+
+
+
 
 /**
  * This function does:
