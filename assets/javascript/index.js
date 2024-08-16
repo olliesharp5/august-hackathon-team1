@@ -115,8 +115,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-const canvas = document.getElementById('game-area');
-const ctx = canvas.getContext('2d'); 
 
 /**
  * This function does:
@@ -157,35 +155,36 @@ function playGame() {
     <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
     </main>
     `;
-    const gameArea = document.getElementById("game-area");
-    gameArea.innerHTML = gameContent;
+    document.body.innerHTML = gameContent;
 
-    startLevel(gameState);
+    const canvas = document.getElementById('game-area');
+    const ctx = canvas.getContext('2d'); 
+
+    startLevel(gameState, ctx);
 }
 
 
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
  **/
-function startLevel(gameState) {
-    gameState.misses = 0;  // Reset misses
+function startLevel(gameState, ctx) {
+    gameState.misses = 0;  // Reset the misses
     gameState.remainingDucks = gameState.level * 3;  // Number of ducks per level
 
-    spawnDucks(gameState.level, gameState);
+    spawnDucks(gameState.level, gameState, ctx);
 }
 
 
-
-function spawnDucks(numDucks, gameState) {
+/**
+ * Spawns the required number of ducks based on the level
+ */
+function spawnDucks(numDucks, gameState, ctx) {
+    const canvas = ctx.canvas;  // Get the canvas from the context
     for (let i = 0; i < numDucks; i++) {
-        const duck = createDuck(gameState.level);
-        animateDuck(duck, gameState);
+        const duck = createDuck(gameState.level, canvas);
+        animateDuck(duck, gameState, ctx);
     }
 }
-
-
-
-
 
 
 /**
