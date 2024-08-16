@@ -115,7 +115,7 @@ async function leaderBoard() {
     </main>
     `;
     document.body.innerHTML = leaderboardContent;
-    document.querySelector('button[data-type="play"]').addEventListener('click', playGame);
+    document.querySelector('button[data-type="play"]').addEventListener('click', playGame());
 }
 
 /**
