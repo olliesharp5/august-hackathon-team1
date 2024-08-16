@@ -1,6 +1,6 @@
 import { saveScore, getLeaderboard, testFirestoreConnection } from '/assets/javascript/firebase.js';
 
-// firebase
+// Firebase connection initialisation
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const testDocId = await testFirestoreConnection();
@@ -11,14 +11,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 
-// Random number generator
+/**
+ * This function takes in a min and max value and returns a random integer between the two values.
+ * @param {Integer} min 
+ * @param {Integer} max 
+ * @returns 
+ */
 const getRandomInteger = (min, max) => {
   min = Math.ceil(min)
   max = Math.floor(max)
 
   return Math.floor(Math.random() * (max - min)) + min
 }
-
 
 /**
  * This set of functions does:
