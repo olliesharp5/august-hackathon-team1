@@ -66,11 +66,16 @@ button {
     top: 30px;
     right: 4%;
     border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
 }
 
 #music-controls svg {
     scale: 1.5;
     margin-top: 2px;
+    margin: 0 5px;
 }
 
 #game-area {
