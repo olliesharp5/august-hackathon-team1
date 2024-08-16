@@ -111,7 +111,9 @@ The colour scheme and overall aesthetic of the website will be based on retro st
 
 ### Typography
 
+[Jersey-10](https://fonts.google.com/specimen/Jersey+10?query=jersey+10 "Retro looking google font") google font was used to create retro looking text.
 
+![Jersey-10](/documentation/img/font.png)
 
 ### Imagery
 
@@ -151,9 +153,11 @@ Continued development could include further development to implement the followi
 
 ### Accessibility
 
-
+* Semantic html was used for accessibility.
 
 ## Technologies Used
+
+HTML5, CSS, Javascript
 
 ### Languages Used
 
@@ -164,6 +168,9 @@ Continued development could include further development to implement the followi
 ### Frameworks, Libraries & Programs Used
 
 * [Balsamiq](https://www.balsamiq.com/wireframes "Balsamiq Wireframing Tool") was used to create the wireframes/sitemap for the site.
+* [Pixabay](https://pixabay.com/ "8 bit sounds free library") was used for downloading sound effects and music.
+* [Miro](https://miro.com "creative project manager software") was used for brainstorming and making notes, task list.
+* [Gitpod](https://gitpod.io "cloud based IDE") was used for development.
 
 
 ## Deployment & Local Development
