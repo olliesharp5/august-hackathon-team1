@@ -12,12 +12,24 @@
     <title>DuckHunt Reloaded</title>
 </head>
 <body>
-<main>
-    <div class="menu-container">
-        <h1 id="main-title">DuckHunt Reloaded</h1>
-        <button class="menu-item" data-type="play">Play</button><br>
-        <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
-        <h1 id="top-score">Top-Score:</h1>
+    <main id="game-area">
+        <div class="menu-container">
+            <h1 id="main-title">DuckHunt Reloaded</h1>
+            <button class="menu-item" data-type="play">Play</button><br>
+            <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
+            <h1 id="top-score">Top-Score:</h1>
+        </div>
+    </main>
+    
+    <audio controls autoplay loop class="hidden" id="bg-audio">
+        <source src="/assets/sounds/byte-blast-8-bit-arcade-music-background-music-for-video-208780.mp3" type="audio/mpeg">
+        Your browser does not support the audio element
+    </audio>
+
+    <div id="music-controls">
+        <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+            <path fill-rule="evenodd" d="M8.6 5.2A1 1 0 0 0 7 6v12a1 1 0 0 0 1.6.8l8-6a1 1 0 0 0 0-1.6l-8-6Z" clip-rule="evenodd"/>
+        </svg> 
     </div>
 
 <!--local js-->
