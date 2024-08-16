@@ -33,6 +33,7 @@ We believed that creating something along the lines of an RPG would cause us iss
   * [User Stories](#user-stories)
 
 * [Design](#design)
+  * [Database](#Database)
   * [Colour Scheme](#colour-scheme)
   * [Typography](#typography)
   * [Imagery](#imagery)
@@ -105,6 +106,16 @@ As a returning visitor I would like:
 
 ## Design
 
+* We were following the original game design in terms of srt style.
+* We were implementing new game mechanics. Shorter rounds and more birds at the same time.
+
+### Database
+
+* We have used Firebase for our database.
+* Database model:
+
+![Database](/documentation/img/database_model.png)
+
 ### Colour Scheme
 
 The colour scheme and overall aesthetic of the website will be based on retro style 8 bit video games, obviously taking great inspiration from the graphical style of the original Duck Hunt game.
@@ -171,7 +182,7 @@ HTML5, CSS, Javascript
 * [Pixabay](https://pixabay.com/ "8 bit sounds free library") was used for downloading sound effects and music.
 * [Miro](https://miro.com "creative project manager software") was used for brainstorming and making notes, task list.
 * [Gitpod](https://gitpod.io "cloud based IDE") was used for development.
-
+* [FireBase](https://https://firebase.google.com/ "Database") was used for our database.
 
 ## Deployment & Local Development
 
