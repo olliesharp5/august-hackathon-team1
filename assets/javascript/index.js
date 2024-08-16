@@ -173,11 +173,9 @@ function playGame() {
   };
   
   let gameContent = `
-  <main>
   <canvas id="game-area" width="800" height="600"></canvas>
   <p>Score: <span id="score">0</span></p>
   <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
-  </main>
   `;
   gameArea.innerHTML = gameContent;
 
