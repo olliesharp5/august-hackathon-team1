@@ -156,13 +156,15 @@ function playGame() {
   };
   
   let gameContent = `
-  <canvas id="game" width="800" height="600"></canvas>
+
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
   <p>Score: <span id="score">0</span></p>
   <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
   `;
   gameArea.innerHTML = gameContent;
 
-  const canvas = document.getElementById('game');
+
+  const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d'); 
 
   startLevel(gameState, ctx);
