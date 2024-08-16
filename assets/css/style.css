@@ -33,8 +33,9 @@ body:after {
 }
 
 #main-title {
-    font-size: 10em;
+    font-size: 10rem;
     color: aqua;
+    text-align: center;
 }
 
 #top-score {
@@ -82,5 +83,16 @@ button {
     max-width: 90%;
     margin: 0 auto;
     background-color: rgba(0, 0, 0, 0.5);
-    padding: 15px;
+    padding: 2rem;
+}
+
+canvas {
+    display: block;
+    margin: 0 auto;
+    border: 1px solid #fff;
+    max-width: 100%;
+    background-image: url(../images/backgroundimages/level-1-bg.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
