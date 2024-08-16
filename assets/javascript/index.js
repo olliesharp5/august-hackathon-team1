@@ -149,6 +149,7 @@ function createDuck(level, canvas) {
 function animateDuck(duck, gameState, ctx) {
     const canvas = ctx.canvas; // Access the canvas from the context
     const interval = setInterval(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         duck.x += duck.speed * duck.direction;
 
         // Bounce off the walls
@@ -171,6 +172,7 @@ function animateDuck(duck, gameState, ctx) {
         }
 
         drawDuck(duck, ctx);  // Redraw duck at new position
+
     }, 20);
 }
 
