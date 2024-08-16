@@ -128,22 +128,39 @@ function playGame() {
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
  **/
 function startLevel(gameState, ctx) {
-    gameState.misses = 0;  // Reset the misses
-    gameState.remainingDucks = gameState.level * 3;  // Number of ducks per level
-
-    spawnDucks(gameState.level, gameState, ctx);
+    gameState.misses = 0;  // Reset the misses for the new level
+    spawnDucks(gameState, ctx);  // Start spawning ducks for the level
 }
-
 
 /**
  * Spawns the required number of ducks based on the level
  */
-function spawnDucks(numDucks, gameState, ctx) {
+function spawnDucks(gameState, ctx) {
     const canvas = ctx.canvas;  // Get the canvas from the context
-    for (let i = 0; i < numDucks; i++) {
-        const duck = createDuck(gameState.level, canvas);
-        animateDuck(duck, gameState, ctx);
+    const ducksPerBatch = gameState.level;  // Number of ducks to spawn at once
+    const totalDucks = gameState.level * 3;  // Total ducks to spawn for this level
+    gameState.remainingDucks = totalDucks;  // Initialize remaining ducks
+
+    function spawnDuckBatch() {
+        if (gameState.remainingDucks > 0) {
+            // Spawn ducksPerBatch ducks at once
+            for (let i = 0; i < ducksPerBatch && gameState.remainingDucks > 0; i++) {
+                const duck = createDuck(gameState.level, canvas);
+                animateDuck(duck, gameState, ctx, spawnDuckBatch);  // Pass spawnDuckBatch as callback
+                gameState.remainingDucks--;  // Decrease the remaining ducks counter
+            }
+        } else {
+            // Move to the next level if all ducks for this level are handled
+            if (gameState.level < 5) {
+                nextLevel(gameState, ctx);
+            } else {
+                console.log("You completed all levels!");  // Handle game completion
+            }
+        }
     }
+
+    // Start the first batch of ducks
+    spawnDuckBatch();
 }
 
 
@@ -169,10 +186,12 @@ function createDuck(level, canvas) {
 }
 
 
-function animateDuck(duck, gameState, ctx) {
-    const canvas = ctx.canvas; // Access the canvas from the context
+function animateDuck(duck, gameState, ctx, callback = () => {}) {
+    const canvas = ctx.canvas;  // Access the canvas from the context
     const interval = setInterval(() => {
+        // Clear the entire canvas before drawing the new frame
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
         duck.x += duck.speed * duck.direction;
 
         // Bounce off the walls
@@ -181,9 +200,19 @@ function animateDuck(duck, gameState, ctx) {
             duck.bounces = (duck.bounces || 0) + 1;
 
             if (duck.bounces >= 3) {
-                // Duck leaves the area
-                clearInterval(interval);
-                gameState.remainingDucks --;
+                // Move the duck out of the canvas after the third bounce
+                if (duck.direction === 1) {
+                    duck.x = canvas.width;  // Move duck to the right of the canvas
+                } else {
+                    duck.x = -duck.size;  // Move duck to the left of the canvas
+                }
+
+                clearInterval(interval);  // Stop the duck's animation
+
+                console.log(`Duck left the screen. Remaining Ducks: ${gameState.remainingDucks}`);
+
+                // Trigger the callback to possibly spawn more ducks if needed
+                callback();
             }
         }
 
@@ -194,8 +223,7 @@ function animateDuck(duck, gameState, ctx) {
             duck.frameCounter = 0;
         }
 
-        drawDuck(duck, ctx);  // Redraw duck at new position
-
+        drawDuck(duck, ctx);  // Redraw duck at new position with the correct direction
     }, 20);
 }
 
@@ -235,10 +263,12 @@ function drawDuck(duck, ctx) {
  * This function does:
  * Handles leveling up the game
  */
-function levelUp() {
-    level++;
-    remainingDucks = 3 + level;
-    spawnDuck();
+function nextLevel(gameState, ctx) {
+    gameState.level++;
+    console.log(`Starting Level ${gameState.level}`);
+
+    // Start the next level
+    startLevel(gameState, ctx);
 }
 
 /**
