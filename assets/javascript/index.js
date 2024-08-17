@@ -139,14 +139,13 @@ async function leaderBoard() {
     document.querySelector('button[data-type="play"]').addEventListener('click', playGame);
 }
 
+let activeDucks = [];  // Array to hold all active ducks
 
 /**
  * Sets up the initial game state and starts the first level
  **/
 function playGame() {
-
   const gameArea = document.getElementById('game-area');
-
   const gameState = {
       level: 1,
       remainingDucks: 0,
@@ -156,13 +155,11 @@ function playGame() {
   };
   
   let gameContent = `
-
   <canvas id="gameCanvas" width="800" height="600"></canvas>
   <p>Score: <span id="score">0</span></p>
   <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
   `;
   gameArea.innerHTML = gameContent;
-
 
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d'); 
@@ -176,51 +173,44 @@ function playGame() {
  **/
 function startLevel(gameState, ctx) {
     gameState.misses = 0;  // Reset the misses for the new level
+    activeDucks = [];  // Clear any previous ducks from the array
+    gameState.remainingDucks = gameState.level * 6;  // Set the correct number of ducks for this level
     spawnDucks(gameState, ctx);  // Start spawning ducks for the level
+    requestAnimationFrame(() => drawAllDucks(ctx));  // Start the centralized drawing loop
 }
 
 /**
  * Spawns the required number of ducks based on the level
  */
 function spawnDucks(gameState, ctx) {
-    const canvas = ctx.canvas;  // Get the canvas from the context
-    const ducksPerBatch = gameState.level;  // Number of ducks to spawn at once
-    const totalDucks = gameState.level * 3;  // Total ducks to spawn for this level
-    gameState.remainingDucks = totalDucks;  // Initialize remaining ducks
+    const canvas = ctx.canvas;
+    const ducksPerBatch = gameState.level * 2;  // Number of ducks to spawn at once
 
-    function spawnDuckBatch() {
-        if (gameState.remainingDucks > 0) {
-            // Spawn ducksPerBatch ducks at once
-            for (let i = 0; i < ducksPerBatch && gameState.remainingDucks > 0; i++) {
-                const duck = createDuck(gameState.level, canvas);
-                animateDuck(duck, gameState, ctx, spawnDuckBatch);  // Pass spawnDuckBatch as callback
-                gameState.remainingDucks--;  // Decrease the remaining ducks counter
-            }
-        } else {
-            // Move to the next level if all ducks for this level are handled
-            if (gameState.level < 5) {
-                nextLevel(gameState, ctx);
-            } else {
-                console.log("You completed all levels!");  // Handle game completion
-            }
-        }
+    console.log(`Level ${gameState.level} - Remaining Ducks: ${gameState.remainingDucks}`);
+
+    // Spawn ducksPerBatch ducks at once with the same speed
+    for (let i = 0; i < ducksPerBatch && gameState.remainingDucks > 0; i++) {
+        const duck = createDuck(gameState.level, canvas, 2 + gameState.level * 0.5);  // Use consistent speed
+        activeDucks.push(duck);  // Add the duck to the activeDucks array
+        animateDuck(duck, gameState, ctx);
+        gameState.remainingDucks--;  // Decrease the remaining ducks counter
     }
-
-    // Start the first batch of ducks
-    spawnDuckBatch();
 }
 
 
 function createDuck(level, canvas) {
     const duckSize = 50 - (level * 5);  // Decrease hitbox size with level
-    const speed = 2 + (level * 0.5);  // Increase speed with level
+    const speed = 2 + (level * 1.5);  // Increase speed with level
+
+    // Randomly decide if the duck starts from the left or right border
+    const startFromLeft = Math.random() < 0.5;
 
     const duck = {
-        x: Math.random() * (canvas.width - duckSize),
+        x: startFromLeft ? 0 : canvas.width - duckSize,  // Start at the left or right border
         y: Math.random() * (canvas.height / 2),
         size: duckSize,
         speed: speed,
-        direction: Math.random() < 0.5 ? 1 : -1,  // Randomly left or right
+        direction: startFromLeft ? 1 : -1,  // If starting from the left, move right; if from the right, move left
         spriteWidth: 64,  // Width of a single frame in the sprite sheet
         spriteHeight: 64,  // Height of a single frame in the sprite sheet
         totalFrames: 3,  // Total number of animation frames
@@ -234,11 +224,8 @@ function createDuck(level, canvas) {
 
 
 function animateDuck(duck, gameState, ctx, callback = () => {}) {
-    const canvas = ctx.canvas;  // Access the canvas from the context
+    const canvas = ctx.canvas;
     const interval = setInterval(() => {
-        // Clear the entire canvas before drawing the new frame
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         duck.x += duck.speed * duck.direction;
 
         // Bounce off the walls
@@ -247,19 +234,29 @@ function animateDuck(duck, gameState, ctx, callback = () => {}) {
             duck.bounces = (duck.bounces || 0) + 1;
 
             if (duck.bounces >= 3) {
-                // Move the duck out of the canvas after the third bounce
-                if (duck.direction === 1) {
-                    duck.x = canvas.width;  // Move duck to the right of the canvas
-                } else {
-                    duck.x = -duck.size;  // Move duck to the left of the canvas
-                }
+                // Duck leaves the screen
+                clearInterval(interval);
+                
+                // Remove duck from activeDucks array
+                activeDucks = activeDucks.filter(d => d !== duck);
 
-                clearInterval(interval);  // Stop the duck's animation
-
+                // Decrement remainingDucks
+                gameState.remainingDucks--;
                 console.log(`Duck left the screen. Remaining Ducks: ${gameState.remainingDucks}`);
 
-                // Trigger the callback to possibly spawn more ducks if needed
-                callback();
+                // Check if there are no more active ducks and remaining ducks to spawn
+                if (activeDucks.length === 0) {
+                    if (gameState.remainingDucks > 0) {
+                        console.log(`Spawning more ducks. Remaining Ducks to Spawn: ${gameState.remainingDucks}`);
+                        spawnDucks(gameState, ctx); // Spawn more ducks
+                    } else if (gameState.level < 5) {
+                        console.log(`Moving to next level.`);
+                        nextLevel(gameState, ctx); // Move to the next level
+                    } else {
+                        console.log("You completed all levels!");
+                        gameOver(gameState); // End the game
+                    }
+                }
             }
         }
 
@@ -270,8 +267,30 @@ function animateDuck(duck, gameState, ctx, callback = () => {}) {
             duck.frameCounter = 0;
         }
 
-        drawDuck(duck, ctx);  // Redraw duck at new position with the correct direction
+        // Draw the duck
+        drawDuck(duck, ctx);
     }, 20);
+}
+
+function drawAllDucks(ctx) {
+    const canvas = ctx.canvas;
+
+    // Clear the entire canvas before drawing the new frame
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw all active ducks
+    activeDucks.forEach(duck => {
+        // Handle sprite animation
+        duck.frameCounter++;
+        if (duck.frameCounter >= duck.frameSpeed) {
+            duck.currentFrame = (duck.currentFrame + 1) % duck.totalFrames;
+            duck.frameCounter = 0;
+        }
+
+        drawDuck(duck, ctx);
+    });
+
+    requestAnimationFrame(() => drawAllDucks(ctx));  // Schedule the next frame
 }
 
 
@@ -304,6 +323,7 @@ function drawDuck(duck, ctx) {
     // Restore the context to its original state
     ctx.restore();
 }
+
 
 
 /**
