@@ -158,8 +158,8 @@ function playGame() {
   let gameContent = `
 
   <canvas id="gameCanvas" width="800" height="600"></canvas>
-  <p>Score: <span id="score">0</span></p>
-  <p>Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
+  <p id="display-score">Score: <span id="score">0</span></p>
+  <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
   `;
   gameArea.innerHTML = gameContent;
 
@@ -221,8 +221,8 @@ function createDuck(level, canvas) {
         size: duckSize,
         speed: speed,
         direction: Math.random() < 0.5 ? 1 : -1,  // Randomly left or right
-        spriteWidth: 64,  // Width of a single frame in the sprite sheet
-        spriteHeight: 64,  // Height of a single frame in the sprite sheet
+        spriteWidth: 125,  // Width of a single frame in the sprite sheet
+        spriteHeight: 100,  // Height of a single frame in the sprite sheet
         totalFrames: 3,  // Total number of animation frames
         currentFrame: 0,  // Start at the first frame
         frameCounter: 0,  // To control animation speed
