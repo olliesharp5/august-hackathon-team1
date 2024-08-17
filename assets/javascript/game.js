@@ -100,7 +100,9 @@ function startLevel(gameState, ctx, canvas) {
             const blood = new Image();
             blood.src = 'assets/images/sprites/blood-splatter.jpg';
             ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
-            activeDucks = activeDucks.filter(d => d !== duck);  // Remove the duck from the activeDucks array
+            //activeDucks = activeDucks.filter(d => d !== duck);  // Remove the duck from the activeDucks array
+            duck.state = "dead";
+            duck.fallSpeed = 15;
             gameState.score += 100;  // Increase the score
             score.innerHTML = gameState.score;  // Update the score display
         } else {
@@ -142,6 +144,8 @@ function createDuck(level, canvas) {
         y: Math.random() * (canvas.height / 2),
         size: duckSize,
         speed: speed,
+        state: "alive",
+        fallSpeed: 0,
 
         direction: Math.random() < 0.5 ? 1 : -1,  // Randomly left or right
         spriteWidth: 125,  // Width of a single frame in the sprite sheet
@@ -159,37 +163,46 @@ function createDuck(level, canvas) {
 function animateDuck(duck, gameState, ctx, callback = () => {}) {
     const canvas = ctx.canvas;
     const interval = setInterval(() => {
-        duck.x += duck.speed * duck.direction;
-
-        // Bounce off the walls
-        if (duck.x <= 0 || duck.x + duck.size >= canvas.width) {
-            duck.direction *= -1;
-            duck.bounces = (duck.bounces || 0) + 1;
-
-            if (duck.bounces >= 3) {
-                // Duck leaves the screen
-                clearInterval(interval);
-                
-                // Remove duck from activeDucks array
-                activeDucks = activeDucks.filter(d => d !== duck);
-
-                // Decrement remainingDucks
-                gameState.remainingDucks--;
-                console.log(`Duck left the screen. Remaining Ducks: ${gameState.remainingDucks}`);
-
-                // Check if there are no more active ducks and remaining ducks to spawn
-                if (activeDucks.length === 0) {
-                    if (gameState.remainingDucks > 0) {
-                        console.log(`Spawning more ducks. Remaining Ducks to Spawn: ${gameState.remainingDucks}`);
-                        spawnDucks(gameState, ctx); // Spawn more ducks
-                    } else if (gameState.level < 5) {
-                        console.log(`Moving to next level.`);
-                        nextLevel(gameState, ctx); // Move to the next level
-                    } else {
-                        console.log("You completed all levels!");
-                        gameOver(gameState); // End the game
+        if (duck.state == "alive") {
+            duck.x += duck.speed * duck.direction;
+            // Bounce off the walls
+            if (duck.x <= 0 || duck.x + duck.size >= canvas.width) {
+                duck.direction *= -1;
+                duck.bounces = (duck.bounces || 0) + 1;
+    
+                if (duck.bounces >= 3) {
+                    // Duck leaves the screen
+                    clearInterval(interval);
+                    
+                    // Remove duck from activeDucks array
+                    activeDucks = activeDucks.filter(d => d !== duck);
+    
+                    // Decrement remainingDucks
+                    gameState.remainingDucks--;
+                    console.log(`Duck left the screen. Remaining Ducks: ${gameState.remainingDucks}`);
+    
+                    // Check if there are no more active ducks and remaining ducks to spawn
+                    if (activeDucks.length === 0) {
+                        if (gameState.remainingDucks > 0) {
+                            console.log(`Spawning more ducks. Remaining Ducks to Spawn: ${gameState.remainingDucks}`);
+                            spawnDucks(gameState, ctx); // Spawn more ducks
+                        } else if (gameState.level < 5) {
+                            console.log(`Moving to next level.`);
+                            nextLevel(gameState, ctx); // Move to the next level
+                        } else {
+                            console.log("You completed all levels!");
+                            gameOver(gameState); // End the game
+                        }
                     }
                 }
+            }
+        } else {
+            // Duck is dead
+            duck.y += duck.fallSpeed;
+            if (duck.y >= canvas.height) {
+                // Duck fell off the screen
+                clearInterval(interval);
+                activeDucks = activeDucks.filter(d => d !== duck);
             }
         }
 
@@ -228,30 +241,45 @@ function drawAllDucks(ctx) {
 
 
 function drawDuck(duck, ctx) {
-    const duckSprite = new Image();
-    duckSprite.src = 'assets/images/sprites/duck-sprite.png';
+    const aliveDuckSprite = new Image();
+    aliveDuckSprite.src = 'assets/images/sprites/duck-sprite.png';
+    
+    const deadDuckSprite = new Image();
+    deadDuckSprite.src = 'assets/images/sprites/dead-duck-sprite.png';
+
     // Save the current context state
     ctx.save();
 
-    // Calculate the source x position of the current frame in the sprite sheet
-    const srcX = duck.currentFrame * duck.spriteWidth;
+    if (duck.state === "alive") {
+        // Calculate the source x position of the current frame in the sprite sheet
+        const srcX = duck.currentFrame * duck.spriteWidth;
 
-    // Flip the duck horizontally ONLY if it's moving to the left
-    if (duck.direction === -1) {
-        ctx.translate(duck.x + duck.size, duck.y);
-        ctx.scale(-1, 1); 
+        // Flip the duck horizontally ONLY if it's moving to the left
+        if (duck.direction === -1) {
+            ctx.translate(duck.x + duck.size, duck.y);
+            ctx.scale(-1, 1); 
+        } else {
+            ctx.translate(duck.x, duck.y); 
+        }
+
+        // Draw the duck at its new position
+        ctx.drawImage(
+            aliveDuckSprite,            // Image source
+            srcX, 0,               // Source x, y (top-left corner of the frame in the sprite sheet)
+            duck.spriteWidth, duck.spriteHeight, // Source width, height (size of the frame)
+            0, 0,                  // Destination x, y (already translated, so use 0, 0)
+            duck.size, duck.size   // Destination width, height (size on the canvas)
+        );
     } else {
-        ctx.translate(duck.x, duck.y); 
+        ctx.translate(duck.x, duck.y);
+        ctx.drawImage(
+            deadDuckSprite,            // Image source
+            0, 0,               // Source x, y (top-left corner of the frame in the sprite sheet)
+            50, 50, // Source width, height (size of the frame)
+            0, 0,                  // Destination x, y (already translated, so use 0, 0)
+            duck.size, duck.size   // Destination width, height (size on the canvas)
+            );
     }
-
-    // Draw the duck at its new position
-    ctx.drawImage(
-        duckSprite,            // Image source
-        srcX, 0,               // Source x, y (top-left corner of the frame in the sprite sheet)
-        duck.spriteWidth, duck.spriteHeight, // Source width, height (size of the frame)
-        0, 0,                  // Destination x, y (already translated, so use 0, 0)
-        duck.size, duck.size   // Destination width, height (size on the canvas)
-    );
 
     // Restore the context to its original state
     ctx.restore();
