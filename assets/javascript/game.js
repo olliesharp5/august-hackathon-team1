@@ -468,16 +468,21 @@ function gameOver(gameState) {
         const username = prompt("Game Over! Please enter your username to save your score:");
 
         if (username) {
+            // If a username is provided, save the score and then show the leaderboard
             saveScore(username, gameState.score).then(() => {
                 alert(`Your score: ${gameState.score} has been saved!`);
                 leaderBoard();
             }).catch(error => {
                 console.error("Error saving score: ", error);
+                leaderBoard();  // Redirect to leaderboard even if saving fails
             });
         } else {
-            alert("Score not saved because username was not provided.");
+            // If no username is provided, just show the leaderboard
+            alert("No username entered. Your score was not saved.");
+            leaderBoard();
         }
     } else {
         console.error("Invalid score value. Game Over skipped score save.");
+        leaderBoard();  // Redirect to leaderboard even if the score is invalid
     }
 }
