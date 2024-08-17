@@ -173,6 +173,10 @@ function startLevel(gameState, ctx, canvas) {
             gameState.misses++;
             document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
 
+            // Deduct points for a miss
+            gameState.score = Math.max(0, gameState.score - 50); // Ensure score doesn't go below zero
+            document.getElementById('score').innerText = gameState.score; // Update the score display
+
             // Check if the player has missed too many times
             if (gameState.misses >= gameState.maxMisses) {
                 gameState.roundOver = true; // Set roundOver flag to true
