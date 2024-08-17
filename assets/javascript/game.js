@@ -86,16 +86,21 @@ function startLevel(gameState, ctx, canvas) {
     // Check if the click hit any of the ducks and if so, 
     // replace the duck with blood splatter png which fades out after 3 seconds
     activeDucks.forEach(duck => {
-      if (x > duck.x && x < duck.x + duck.size && y > duck.y && y < duck.y + duck.size) {
-        const blood = new Image();
-        blood.src = 'assets/images/sprites/blood-splatter.jpg';
-        ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
-        activeDucks = activeDucks.filter(d => d !== duck);  // Remove the duck from the activeDucks array
-        gameState.score += 100;  // Increase the score
-        score.innerHTML = gameState.score;  // Update the score display
-      } else {
-        gameState.misses++;  // Increase the misses
-        document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
+        let minAreaX = duck.x - (duck.size);
+        let maxAreaX = duck.x + (duck.size / 2);
+        let minAreaY = duck.y - (duck.size);
+        let maxAreaY = duck.y + (duck.size / 2);
+  
+        if (x > minAreaX && x < maxAreaX && y > minAreaY && y < maxAreaY) {
+            const blood = new Image();
+            blood.src = 'assets/images/sprites/blood-splatter.jpg';
+            ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
+            activeDucks = activeDucks.filter(d => d !== duck);  // Remove the duck from the activeDucks array
+            gameState.score += 100;  // Increase the score
+            score.innerHTML = gameState.score;  // Update the score display
+        } else {
+            gameState.misses++;  // Increase the misses
+            document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
       }
     });
   });
