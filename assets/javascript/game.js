@@ -266,15 +266,23 @@ function createDuck(level, canvas) {
         state: "alive",
         fallSpeed: 0,
         lastX: null, // To track the duck's previous position to detect unexpected disappearance
-
-        direction: Math.random() < 0.5 ? 1 : -1, // Randomly left or right
+        direction: startFromLeft ? 1 : -1, // Moving direction, 1 for right, -1 for left
         spriteWidth: 125, // Width of a single frame in the sprite sheet
         spriteHeight: 100, // Height of a single frame in the sprite sheet
         totalFrames: 3, // Total number of animation frames
         currentFrame: 0, // Start at the first frame
         frameCounter: 0, // To control animation speed
-        frameSpeed: 10 // How many game ticks before the next frame
+        frameSpeed: 10, // How many game ticks before the next frame
+
+        // New properties for vertical movement
+        amplitude: (level >= 2) ? 30 : 0, // Vertical movement amplitude; only for level 3 and onwards
+        frequency: (level >= 2) ? 0.05 + (0.01 * (level - 2)) : 0, // Base frequency increases slightly with each level
+        baseY: null, // Base Y position to oscillate around
+        time: 0 // Time variable to create the wave motion
     };
+
+    // Set baseY to current y position, to oscillate around this y position
+    duck.baseY = duck.y;
 
     return duck;
 }
@@ -288,6 +296,12 @@ function animateDuck(duck, gameState, ctx) {
         if (duck.state === "alive") {
             duck.lastX = duck.x; // Track the last known x position
             duck.x += duck.speed * duck.direction;
+
+            // Vertical movement logic (sine wave)
+            if (gameState.level >= 2) {
+                duck.time += duck.frequency; // Increment time
+                duck.y = duck.baseY + duck.amplitude * Math.sin(duck.time); // Calculate new y position based on sine wave
+            }
 
             // Check for unexpected disappearance
             if (Math.abs(duck.x - duck.lastX) > canvas.width / 2) {
@@ -362,6 +376,7 @@ function animateDuck(duck, gameState, ctx) {
         drawDuck(duck, ctx);
     }, 20);
 }
+
 
 /**
  * Draws all ducks on the canvas
