@@ -95,4 +95,9 @@ canvas {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    overflow:hidden;
+}
+
+canvas:hover {
+    cursor: url('../images/sprites/cursor.png'), auto;
 }
