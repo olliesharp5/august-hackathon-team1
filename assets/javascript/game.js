@@ -45,7 +45,15 @@ let activeDucks = []; // Array to hold all active ducks
  * Sets up the initial game state and starts the first level
  **/
 function playGame() {
-    const gameArea = document.getElementById('game-area');
+    let gameArea = document.getElementById('game-area');
+
+    // If the gameArea does not exist, create it or ensure it is reinserted
+    if (!gameArea) {
+        gameArea = document.createElement('div');
+        gameArea.id = 'game-area';
+        document.body.appendChild(gameArea);
+    }
+
     const gameState = {
         level: 1,
         remainingDucks: 0,
