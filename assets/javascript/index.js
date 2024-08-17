@@ -43,6 +43,14 @@ document.addEventListener("DOMContentLoaded", function () {
   
   // Set volume to 50% on load (It's very loud otherwise)
   music.volume = 0.5;
+  volumeControl.value = 50;
+
+  // Set initial icons based on autoplay
+  if (music.muted) {
+    volumeToggle.innerHTML = playIcon;
+  } else {
+    volumeToggle.innerHTML = notMutedIcon;
+  }
 
   // Toggle play/pause
   playToggle.addEventListener("click", function () {
@@ -164,19 +172,43 @@ function playGame() {
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d'); 
 
-  startLevel(gameState, ctx);
+  startLevel(gameState, ctx, canvas);
+
 }
 
 
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
  **/
-function startLevel(gameState, ctx) {
+function startLevel(gameState, ctx, canvas) {
     gameState.misses = 0;  // Reset the misses for the new level
     activeDucks = [];  // Clear any previous ducks from the array
     gameState.remainingDucks = gameState.level * 6;  // Set the correct number of ducks for this level
     spawnDucks(gameState, ctx);  // Start spawning ducks for the level
     requestAnimationFrame(() => drawAllDucks(ctx));  // Start the centralized drawing loop
+
+  // Event listener for shooting ducks
+  canvas.addEventListener('click', (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    // Check if the click hit any of the ducks and if so, 
+    // replace the duck with blood splatter png which fades out after 3 seconds
+    activeDucks.forEach(duck => {
+      if (x > duck.x && x < duck.x + duck.size && y > duck.y && y < duck.y + duck.size) {
+        const blood = new Image();
+        blood.src = 'assets/images/sprites/blood-splatter.jpg';
+        ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
+        activeDucks = activeDucks.filter(d => d !== duck);  // Remove the duck from the activeDucks array
+        gameState.score += 100;  // Increase the score
+        score.innerHTML = gameState.score;  // Update the score display
+      } else {
+        gameState.misses++;  // Increase the misses
+        document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
+      }
+    });
+  });
 }
 
 /**
