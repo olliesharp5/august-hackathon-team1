@@ -30,7 +30,7 @@ async function leaderBoard() {
     <main>
     <h1>Leaderboard</h1>
     <ul>
-        ${leaderboard.map(entry => `<li>${entry.name}: ${entry.score}</li>`).join('')}
+        ${leaderboard.map(entry => `<li>${entry.username}: ${entry.score}</li>`).join('')}
     </ul>
     <button data-type="play">Play Again</button>
     </main>
@@ -428,12 +428,19 @@ function nextLevel(gameState, ctx, canvas) {
 function gameOver(gameState) {
     // Ensure that score is saved only once and is a valid number
     if (typeof gameState.score === 'number' && !isNaN(gameState.score)) {
-        saveScore(gameState.score).then(() => {
-            alert(`Game Over! Your score: ${gameState.score}`);
-            leaderBoard();
-        }).catch(error => {
-            console.error("Error saving score: ", error);
-        });
+        // Prompt the user for their username
+        const username = prompt("Game Over! Please enter your username to save your score:");
+
+        if (username) {
+            saveScore(username, gameState.score).then(() => {
+                alert(`Your score: ${gameState.score} has been saved!`);
+                leaderBoard();
+            }).catch(error => {
+                console.error("Error saving score: ", error);
+            });
+        } else {
+            alert("Score not saved because username was not provided.");
+        }
     } else {
         console.error("Invalid score value. Game Over skipped score save.");
     }
