@@ -60,3 +60,15 @@ export async function testFirestoreConnection() {
       throw e;
     }
   }
+
+// Handle Firebase connection and initialisation
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+      const testDocId = await testFirestoreConnection();
+      console.log(`Firestore is connected. Test document ID: ${testDocId}`);
+  } catch (error) {
+      console.error("Failed to connect to Firestore:", error);
+  }
+
+});
+
