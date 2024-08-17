@@ -79,6 +79,11 @@ function startLevel(gameState, ctx, canvas) {
 
   // Event listener for shooting ducks
   canvas.addEventListener('click', (event) => {
+
+    // Play gunshot
+    const gunshot = new Audio('../assets/sounds/gunshot.mp3');
+    gunshot.play();
+    
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
