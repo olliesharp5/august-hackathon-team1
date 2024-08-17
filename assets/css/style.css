@@ -43,6 +43,11 @@ body:after {
     color: #a87d32;
 }
 
+#display-score, 
+#display-misses {
+    color: #fff;
+}
+
 button {
     background-color: #a87d32;
     font-family: "Jersey 10", sans-serif;

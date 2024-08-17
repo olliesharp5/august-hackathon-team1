@@ -3,40 +3,68 @@ import {
     getLeaderboard
 } from '/assets/javascript/firebase.js';
 
-// Menu
-// Calls playGame() or leaderBoard()
 document.addEventListener("DOMContentLoaded", function () {
+    setupMenuButtons();
+    showMainMenu();  // Display the main menu with the top score when the page loads
+});
+
+function setupMenuButtons() {
     let buttons = document.getElementsByTagName("button");
     for (let button of buttons) {
         button.addEventListener("click", function () {
             if (this.getAttribute("data-type") === "play") {
                 playGame();
-            } else {
-                if (this.getAttribute("data-type") === "leaderboard") {
-                    leaderBoard();
-                }
+            } else if (this.getAttribute("data-type") === "leaderboard") {
+                leaderBoard();
+            } else if (this.getAttribute("data-type") === "menu") {
+                showMainMenu();
             }
         });
     }
-});
+}
 
-/**
- * This function does:
- * handle the leaderboard
- **/
+async function showMainMenu() {
+    let topScoreText = 'Loading...';
+
+    // Fetch the top score from the leaderboard
+    const leaderboard = await getLeaderboard();
+    if (leaderboard && leaderboard.length > 0) {
+        const topScore = leaderboard[0].score;
+        topScoreText = `Top Score: ${topScore} by ${leaderboard[0].username}`;
+    } else {
+        topScoreText = 'No scores yet.';
+    }
+
+    const mainMenuContent = `
+    <div class="menu-container">
+        <h1 id="main-title">DuckHunt Reloaded</h1>
+        <button class="menu-item" data-type="play">Play</button><br>
+        <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
+        <h1 id="top-score">${topScoreText}</h1>
+    </div>
+    `;
+    document.getElementById('game-area').innerHTML = mainMenuContent;
+
+    // Reattach event listeners to the buttons in the main menu
+    setupMenuButtons();
+}
+
 async function leaderBoard() {
     const leaderboard = await getLeaderboard();
     let leaderboardContent = `
-    <main>
-    <h1>Leaderboard</h1>
-    <ul>
-        ${leaderboard.map(entry => `<li>${entry.name}: ${entry.score}</li>`).join('')}
-    </ul>
-    <button data-type="play">Play Again</button>
-    </main>
+    <div class="menu-container">
+        <h1>Leaderboard</h1>
+        <ul>
+            ${leaderboard.map(entry => `<li>${entry.username}: ${entry.score}</li>`).join('')}
+        </ul>
+        <button class="menu-item" data-type="play">Play Again</button><br>
+        <button class="menu-item" data-type="menu">Back to Main Menu</button>
+    </div>
     `;
-    document.body.innerHTML = leaderboardContent;
-    document.querySelector('button[data-type="play"]').addEventListener('click', playGame);
+    document.getElementById('game-area').innerHTML = leaderboardContent;
+
+    // Reattach event listeners to the buttons in the leaderboard
+    setupMenuButtons();
 }
 
 let activeDucks = []; // Array to hold all active ducks
@@ -45,7 +73,15 @@ let activeDucks = []; // Array to hold all active ducks
  * Sets up the initial game state and starts the first level
  **/
 function playGame() {
-    const gameArea = document.getElementById('game-area');
+    let gameArea = document.getElementById('game-area');
+
+    // If the gameArea does not exist, create it or ensure it is reinserted
+    if (!gameArea) {
+        gameArea = document.createElement('div');
+        gameArea.id = 'game-area';
+        document.body.appendChild(gameArea);
+    }
+
     const gameState = {
         level: 1,
         remainingDucks: 0,
@@ -136,6 +172,10 @@ function startLevel(gameState, ctx, canvas) {
         if (!duckHit) {
             gameState.misses++;
             document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
+
+            // Deduct points for a miss
+            gameState.score = Math.max(0, gameState.score - 50); // Ensure score doesn't go below zero
+            document.getElementById('score').innerText = gameState.score; // Update the score display
 
             // Check if the player has missed too many times
             if (gameState.misses >= gameState.maxMisses) {
@@ -428,13 +468,25 @@ function nextLevel(gameState, ctx, canvas) {
 function gameOver(gameState) {
     // Ensure that score is saved only once and is a valid number
     if (typeof gameState.score === 'number' && !isNaN(gameState.score)) {
-        saveScore(gameState.score).then(() => {
-            alert(`Game Over! Your score: ${gameState.score}`);
+        // Prompt the user for their username
+        const username = prompt("Game Over! Please enter your username to save your score:");
+
+        if (username) {
+            // If a username is provided, save the score and then show the leaderboard
+            saveScore(username, gameState.score).then(() => {
+                alert(`Your score: ${gameState.score} has been saved!`);
+                leaderBoard();
+            }).catch(error => {
+                console.error("Error saving score: ", error);
+                leaderBoard();  // Redirect to leaderboard even if saving fails
+            });
+        } else {
+            // If no username is provided, just show the leaderboard
+            alert("No username entered. Your score was not saved.");
             leaderBoard();
-        }).catch(error => {
-            console.error("Error saving score: ", error);
-        });
+        }
     } else {
         console.error("Invalid score value. Game Over skipped score save.");
+        leaderBoard();  // Redirect to leaderboard even if the score is invalid
     }
 }
