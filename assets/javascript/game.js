@@ -235,16 +235,18 @@ function spawnDucks(gameState, ctx) {
     const ducksPerBatch = Math.min(2 * gameState.level, gameState.remainingDucks); // Number of ducks to spawn at once, ensuring it doesn't exceed the remaining ducks
 
     for (let i = 0; i < ducksPerBatch; i++) {
-        const duck = createDuck(gameState.level, canvas);
-        activeDucks.push(duck);
-        animateDuck(duck, gameState, ctx);
-    }
+        setTimeout(() => {
+            const duck = createDuck(gameState.level, canvas);
+            activeDucks.push(duck);
+            animateDuck(duck, gameState, ctx);
 
-    gameState.remainingDucks -= ducksPerBatch; // Reduce the number of remaining ducks
+            gameState.remainingDucks--; // Reduce the number of remaining ducks
+        }, i * 500); // Delay of 500ms between each spawn
+    }
 
     // Ensure that all ducks for the level are eventually spawned
     if (gameState.remainingDucks > 0 && activeDucks.length < ducksPerBatch) {
-        spawnDucks(gameState, ctx); // Recursively spawn remaining ducks
+        setTimeout(() => spawnDucks(gameState, ctx), ducksPerBatch * 500); // Recursively spawn remaining ducks with delay
     }
 }
 
