@@ -3,40 +3,68 @@ import {
     getLeaderboard
 } from '/assets/javascript/firebase.js';
 
-// Menu
-// Calls playGame() or leaderBoard()
 document.addEventListener("DOMContentLoaded", function () {
+    setupMenuButtons();
+    showMainMenu();  // Display the main menu with the top score when the page loads
+});
+
+function setupMenuButtons() {
     let buttons = document.getElementsByTagName("button");
     for (let button of buttons) {
         button.addEventListener("click", function () {
             if (this.getAttribute("data-type") === "play") {
                 playGame();
-            } else {
-                if (this.getAttribute("data-type") === "leaderboard") {
-                    leaderBoard();
-                }
+            } else if (this.getAttribute("data-type") === "leaderboard") {
+                leaderBoard();
+            } else if (this.getAttribute("data-type") === "menu") {
+                showMainMenu();
             }
         });
     }
-});
+}
 
-/**
- * This function does:
- * handle the leaderboard
- **/
+async function showMainMenu() {
+    let topScoreText = 'Loading...';
+
+    // Fetch the top score from the leaderboard
+    const leaderboard = await getLeaderboard();
+    if (leaderboard && leaderboard.length > 0) {
+        const topScore = leaderboard[0].score;
+        topScoreText = `Top Score: ${topScore} by ${leaderboard[0].username}`;
+    } else {
+        topScoreText = 'No scores yet.';
+    }
+
+    const mainMenuContent = `
+    <div class="menu-container">
+        <h1 id="main-title">DuckHunt Reloaded</h1>
+        <button class="menu-item" data-type="play">Play</button><br>
+        <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
+        <h1 id="top-score">${topScoreText}</h1>
+    </div>
+    `;
+    document.getElementById('game-area').innerHTML = mainMenuContent;
+
+    // Reattach event listeners to the buttons in the main menu
+    setupMenuButtons();
+}
+
 async function leaderBoard() {
     const leaderboard = await getLeaderboard();
     let leaderboardContent = `
-    <main>
-    <h1>Leaderboard</h1>
-    <ul>
-        ${leaderboard.map(entry => `<li>${entry.username}: ${entry.score}</li>`).join('')}
-    </ul>
-    <button data-type="play">Play Again</button>
-    </main>
+    <div class="menu-container">
+        <h1>Leaderboard</h1>
+        <ul>
+            ${leaderboard.map(entry => `<li>${entry.username}: ${entry.score}</li>`).join('')}
+        </ul>
+        <button class="menu-item" data-type="play">Play Again</button><br>
+        <button class="menu-item" data-type="menu">Back to Main Menu</button>
+    </div>
     `;
-    document.body.innerHTML = leaderboardContent;
-    document.querySelector('button[data-type="play"]').addEventListener('click', playGame);
+    document.getElementById('game-area').innerHTML = leaderboardContent;
+
+    // Reattach event listeners to the buttons in the leaderboard
+    setupMenuButtons();
 }
 
 let activeDucks = []; // Array to hold all active ducks
