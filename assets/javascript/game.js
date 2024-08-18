@@ -409,6 +409,7 @@ function endLevel(gameState, ctx, canvas) {
 
     // Create the button
     const nextButton = document.createElement('button');
+    nextButton.classList.add("next-button");
     if (gameState.level < 5) {
         nextButton.innerText = 'Next Level';
     } else {

@@ -207,6 +207,8 @@ ul li:last-child {
 
 h3, h4, p {
     color: #a87d32;
+    font-size: 1.5em;
+    margin: 0;
 }
 
 /* Media Queries for Mobile Devices */
@@ -224,6 +226,10 @@ h3, h4, p {
         font-size: 3rem; /* Adjust font size for Leaderboard on smaller screens */
     }
 
+    .next-button {
+        margin-top: 100px;
+    }
+
     ul {
         width: 90%; /* Full width for smaller screens */
         max-width: 100%; /* Remove max-width for smaller screens */
@@ -231,7 +237,7 @@ h3, h4, p {
 
     ul li {
         padding: 0.6rem; /* Smaller padding for list items */
-        font-size: 0.9em; /* Smaller font size for list items */
+        font-size: 1.5em; /* Smaller font size for list items */
     }
 
     #top-score {
@@ -275,7 +281,7 @@ h3, h4, p {
 
     ul li {
         padding: 0.5rem; /* Further smaller padding for list items */
-        font-size: 0.8em; /* Further smaller font size for list items */
+        font-size: 1em; /* Further smaller font size for list items */
     }
 
     #top-score {
