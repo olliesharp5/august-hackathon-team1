@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- local stylesheet-->
     <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon/favicon.ico">
     <!-- pixelated google font-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +36,26 @@
 
     <div id="instructions" class="hidden">
         <h2>Instructions</h2>
-        <p>1. shoot ducks</p>
+        <h1 id="main-title">Instructions</h1>
+            <h3><strong>Objective:</strong></h3>
+                <p>Shoot the birds to earn points and climb the leaderboard!</p>
+            <h3><strong>How to Play:</strong></h3>
+                <h4><strong>Shoot Birds:</strong></h4><p>Aim and shoot the birds flying across the screen to earn points.</p>
+                <h4><strong>Scoring:</strong></h4>
+                <ul>
+                    <li>Each bird you shoot is worth <strong>100 points</strong>.</li>
+                    <li>Each miss costs you <strong>50 points</strong>.</li>
+                </ul>
+                <ul>
+                    <li><strong>Misses:</strong> You have a maximum of <strong>3 misses</strong> per round. Use your shots wisely!</li>
+                    <li><strong>Levels:</strong> The game consists of <strong>5 levels</strong>. Complete each level by scoring as high as possible.</li>
+                    <li><strong>Leaderboard:</strong> Your total score across all levels will be recorded on the leaderboard. Aim to be the top scorer!</li>
+            </ul>
+
+        <p>Good luck, and happy shooting!</p>
+            <button class="menu-item" data-type="play">Play</button><br>
+            <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
+            <button class="menu-item" data-type="main-menu">Back to main menu</button><br>
     </div>
 
     <div id="music-controls">
