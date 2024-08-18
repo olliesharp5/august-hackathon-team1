@@ -5,7 +5,7 @@ import {
 
 document.addEventListener("DOMContentLoaded", function () {
     setupMenuButtons();
-    showMainMenu();  // Display the main menu with the top score when the page loads
+    showMainMenu(); // Display the main menu with the top score when the page loads
 });
 
 /**
@@ -122,17 +122,22 @@ function playGame() {
         misses: 0,
         maxMisses: 3,
         score: 0,
-        totalDucks: 0, 
+        totalDucks: 0,
         roundOver: false,
         levelTransitioning: false
     };
 
     let gameContent = `
+    <div id="menu-button-container">
+        <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
+    </div>
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <div id="flash-overlay"></div>
-    <p id="display-score">Score: <span id="score">0</span></p>
-    <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
-    <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
+    <div id="game-info">
+        <p id="display-score" class="game-info-item">Score: <span id="score">0</span></p>
+        <p id="display-level" class="game-info-item">Level: <span id="level">${gameState.level}</span></p>
+        <p id="display-misses" class="game-info-item">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
+    </div>
     `;
     gameArea.innerHTML = gameContent;
 
@@ -172,8 +177,8 @@ function playGame() {
             gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const scaleX = canvas.width / rect.width; // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height; // Account for vertical scaling
             const x = (event.clientX - rect.left) * scaleX;
             const y = (event.clientY - rect.top) * scaleY;
 
@@ -197,8 +202,8 @@ function playGame() {
             gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const scaleX = canvas.width / rect.width; // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height; // Account for vertical scaling
             const x = (event.touches[0].clientX - rect.left) * scaleX;
             const y = (event.touches[0].clientY - rect.top) * scaleY;
 
@@ -245,12 +250,16 @@ function endGameAndReturnToMenu() {
  */
 let lastTouchTime = 0;
 
+
 function startLevel(gameState, ctx, canvas) {
     // Reset game state for the new level
     gameState.misses = 0;
     gameState.roundOver = false;
     gameState.levelTransitioning = true; // Set to true during the transition
     activeDucks = []; // Clear active ducks array
+
+    // Update the level display
+    document.getElementById("level").innerText = gameState.level;
 
     // Reset UI elements
     document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
@@ -263,42 +272,15 @@ function startLevel(gameState, ctx, canvas) {
     // Clear the canvas before starting a new level
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-
-    // Set up the background for the message
-ctx.fillStyle = "#a87d32"; // Background color
-const padding = 20;
-const text = `Get ready for Level ${gameState.level}...`;
-ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
-const textWidth = ctx.measureText(text).width;
-const textHeight = 40; // Estimated height based on font size
-
-// Draw background rectangle
-ctx.fillRect(
-    ctx.canvas.width / 2 - textWidth / 2 - padding,
-    ctx.canvas.height / 2 - textHeight / 2 - padding / 2,
-    textWidth + padding * 2,
-    textHeight + padding
-);
-
-// Draw the text over the background
-ctx.fillStyle = "white";
-ctx.textAlign = "center";
-ctx.fillText(
-    text,
-    ctx.canvas.width / 2,
-    ctx.canvas.height / 2 + textHeight / 4
-);
     // Load the background image for the current level
     backgroundImage = new Image();
     backgroundImage.src = `assets/images/background${gameState.level}.jpg`;
-
 
     backgroundImage.onload = function() {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
         // Show "Get ready for Level #" message
-
-        ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
+        ctx.font = "30px 'Jersey 10', sans-serif";
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
@@ -316,6 +298,7 @@ ctx.fillText(
         }, 3000); // 3-second delay for the transition
     };
 }
+
 
 /**
  * Handles the logic when a player clicks or taps to shoot, determining if a duck was hit or missed.
@@ -397,9 +380,16 @@ function endLevel(gameState, ctx, canvas) {
     if (gameState.misses >= gameState.maxMisses) {
         message = `You missed too many shots! `;
     } else {
-        message = `Well done, you only missed ${gameState.misses} shot${gameState.misses !== 1 ? 's' : ''}. `;
+        if (gameState.misses === 0) {
+            message = `Well done, you didn't miss any shots. `;
+        } else if (gameState.misses === 1) {
+            message = `Well done, you only missed 1 shot. `;
+        } else {
+            message = `Well done, you only missed ${gameState.misses} shots. `;
+        }
     }
 
+    // Append the appropriate next step
     if (gameState.level < 5) {
         message += `Proceed to the next level!`;
     } else {
@@ -470,7 +460,7 @@ function spawnDucks(gameState, ctx) {
 
                 gameState.remainingDucks--; // Decrement remaining ducks count when a duck is spawned
                 console.log(`Spawned a duck. Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
-                
+
                 if (gameState.remainingDucks === 0 && activeDucks.length === 0) {
                     checkForEndOfLevel(gameState, ctx, canvas);
                 }
@@ -676,7 +666,7 @@ function nextLevel(gameState, ctx, canvas) {
             ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
             const textWidth = ctx.measureText(text).width;
             const textHeight = 40; // Estimated height based on font size
-        
+
             // Draw background rectangle
             ctx.fillRect(
                 ctx.canvas.width / 2 - textWidth / 2 - padding,
@@ -684,7 +674,7 @@ function nextLevel(gameState, ctx, canvas) {
                 textWidth + padding * 2,
                 textHeight + padding
             );
-        
+
             // Draw the text over the background
             ctx.fillStyle = "black";
             ctx.textAlign = "center";
@@ -694,10 +684,10 @@ function nextLevel(gameState, ctx, canvas) {
                 ctx.canvas.height / 2 + textHeight / 4
             );
         }
-        
+
         // Call this function whenever the player progresses to the next level
         showLevelUpMessage(gameState.level);
-        
+
 
 
         // Delay to show the message before starting the next level
@@ -727,7 +717,7 @@ function gameOver(gameState) {
                 leaderBoard();
             }).catch(error => {
                 console.error("Error saving score: ", error);
-                leaderBoard();  // Redirect to leaderboard even if saving fails
+                leaderBoard(); // Redirect to leaderboard even if saving fails
             });
         } else {
             // If no username is provided, just show the leaderboard
@@ -736,6 +726,6 @@ function gameOver(gameState) {
         }
     } else {
         console.error("Invalid score value. Game Over skipped score save.");
-        leaderBoard();  // Redirect to leaderboard even if the score is invalid
+        leaderBoard(); // Redirect to leaderboard even if the score is invalid
     }
 }
