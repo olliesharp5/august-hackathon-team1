@@ -146,6 +146,8 @@ function startLevel(gameState, ctx, canvas) {
     canvas.onclick = function (event) {
         if (gameState.roundOver) return; // Stop interaction if the round is over
 
+        const gunshot = new Audio('../assets/sounds/gunshot.mp3');
+        gunshot.play();
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
         const scaleY = canvas.height / rect.height;  // Account for vertical scaling
@@ -164,6 +166,8 @@ function startLevel(gameState, ctx, canvas) {
         lastTouchTime = now;
         event.preventDefault(); // Prevent default touch behavior
 
+        const gunshot = new Audio('../assets/sounds/gunshot.mp3');
+        gunshot.play();
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
         const scaleY = canvas.height / rect.height;  // Account for vertical scaling
