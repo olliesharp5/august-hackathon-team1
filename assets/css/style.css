@@ -67,9 +67,52 @@ body:after {
     text-align: center;
 }
 
+#menu-button-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+}
+
+#game-info {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    margin: 10px auto 0;
+    font-size: 40px; 
+    font-family: "Jersey 10", sans-serif;
+}
+
 #display-score, 
 #display-misses {
     color: #fff;
+}
+
+.game-info-item {
+    margin: 0;
+    padding: 0 10px;
+    color: white;
+}
+
+#display-score {
+    text-align: left;
+    flex: 1;
+}
+
+#display-level {
+    text-align: center;
+    flex: 1;
+}
+
+#display-misses {
+    text-align: right;
+    flex: 1;
+}
+
+#back-to-menu {
+    margin-top: 20px;
+    font-size: 20px;
 }
 
 button {
