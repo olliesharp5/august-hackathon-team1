@@ -96,3 +96,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
   });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const instructionsToggle = document.getElementById("instructions-toggle");
+    const instructions = document.getElementById("instructions");
+
+    instructionsToggle.addEventListener("click", function () {
+      instructions.classList.toggle("hidden");
+    });
+  });

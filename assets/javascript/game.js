@@ -43,10 +43,6 @@ async function showMainMenu() {
         <h1 id="top-score">${topScoreText}</h1>
     </div>
     `;
-    document.getElementById('game-area').innerHTML = mainMenuContent;
-
-    // Reattach event listeners to the buttons in the main menu
-    setupMenuButtons();
 }
 
 async function leaderBoard() {
