@@ -100,8 +100,13 @@ document.addEventListener("DOMContentLoaded", function () {
   document.addEventListener("DOMContentLoaded", function () {
     const instructionsToggle = document.getElementById("instructions-toggle");
     const instructions = document.getElementById("instructions");
+    const closeButton = document.getElementById("close-button");
 
     instructionsToggle.addEventListener("click", function () {
       instructions.classList.toggle("hidden");
+    
+    closeButton.addEventListener("click", function () {
+      instructions.classList.add("hidden");
+    });
     });
   });
