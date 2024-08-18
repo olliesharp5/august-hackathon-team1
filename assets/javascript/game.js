@@ -1,7 +1,7 @@
 import {
     saveScore,
     getLeaderboard
-} from '/assets/javascript/firebase.js';
+} from './firebase.js';
 
 document.addEventListener("DOMContentLoaded", function () {
     setupMenuButtons();
