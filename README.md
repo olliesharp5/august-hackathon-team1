@@ -221,24 +221,25 @@ To clone the olliesharp5/august-hackathon-team1:
 
 * Manual Testing:
 
+Game functions have been tested manually throughout the whole developement process on various hand held devices and desktop devices.
+
 * Found bugs:
 
-- Bug 1: [Title of Bug] 
-  - Description:
+- Bug 1: Gunshot sound not playing in the deployed version.
+  - Description: Gunshot sound not playing in the deployed version due to a rooting issue.
   - Steps to Reproduce:
-    1. [Step 1]
-    2. [Step 2]
-    3. [Step 3]
-  - Expected Outcome: [Description of what should happen]
-  - Actual Outcome: [Description of what actually happens]
+    1. [Step 1] correct the routing of the sound file form : new Audio('../assets/sounds/gunshot.mp3');
+    2. [Step 2] test the gunshot in the deployed version
+  - Expected Outcome: gunshot sound plays in deployed version.
+  - Actual Outcome: gunshot sound plays in deployed version.
 
-* Corrected bugs:
-
-- Bug 1: [Title of Bug] 
-  - Description: [Brief description of the bug]
-  - Fix Implemented: [Description of the solution implemented]
-  - Testing After Fix: 
-
+- Bug 2: Back to main menu button does not work on the leaderboard.
+  - Description: Back to main menu button does not work on the leaderboard.
+  - Steps to Reproduce:
+    1. [Step 1] Fix the button.
+    2. [Step 2] Test the button.
+  - Expected Outcome: when we push the button the game rerenders the main menu.
+  - Actual Outcome: when we push the button the game rerenders the main menu.
 
 ## Credits
 
@@ -254,11 +255,12 @@ All the codes in this Repo was developed by us!
 
 ### Content
 
-
+This content has been created by us - Retro Rascals -
 
 ###  Media
 
-
+Every asset and sound in the project is , loyalty free, free to use for sommercial purposes.
   
 ###  Acknowledgments
 
+Thanks to CodeInstitute for creating the Event!
