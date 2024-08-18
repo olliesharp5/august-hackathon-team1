@@ -61,7 +61,7 @@ body:after {
 }
 
 .main-heading {
-    font-size: 4rem; /* Updated size for Leaderboard */
+    font-size: 8rem; /* Updated size for Leaderboard */
     color: aqua;
     text-align: center;
 }
