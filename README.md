@@ -19,7 +19,7 @@ Team Members:
 - [Mihály](https://github.com/Nmyhi)
 - [Chris](https://github.com/Chris-Tranter)
 - [Oliver](https://github.com)
-- 
+- [mohammad](https://github.com/Mtnikmaram)
 
 The goal of this Hackathon event is to create a Retro Game, including the use of 8 bit graphics, sound effects and music. As a group we came together to discuss previous retro games we have enjoyed including Tetris, Road Rash, Z, Worms, Duck Hunt etc.
 
