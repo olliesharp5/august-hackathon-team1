@@ -168,7 +168,7 @@ function playGame() {
 
             flashScreen(); // Trigger the flash effect
 
-            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            const gunshot = new Audio('assets/sounds/gunshot.mp3');
             gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
@@ -193,7 +193,7 @@ function playGame() {
 
             flashScreen(); // Trigger the flash effect
 
-            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            const gunshot = new Audio('assets/sounds/gunshot.mp3');
             gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
