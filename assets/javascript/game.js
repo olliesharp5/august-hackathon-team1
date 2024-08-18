@@ -120,6 +120,8 @@ function playGame() {
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
  **/
+let lastTouchTime = 0;
+
 function startLevel(gameState, ctx, canvas) {
     // Reset game state for the new level
     gameState.misses = 0;
@@ -148,52 +150,78 @@ function startLevel(gameState, ctx, canvas) {
     canvas.onclick = function (event) {
         if (gameState.roundOver) return; // Stop interaction if the round is over
 
-        let duckHit = false;
-        const gunshot = new Audio('../assets/sounds/gunshot.mp3');
-        gunshot.volume = 0.2;
-        gunshot.play();
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
+
+        processHit(x, y, gameState, ctx, canvas);
+    };
+
+    // Set up the touch handler for shooting ducks on touch devices
+    canvas.addEventListener('touchstart', function (event) {
+        const now = Date.now();
+        if (now - lastTouchTime < 300) {
+            return; // Ignore if the last touch event was too recent
+        }
+        lastTouchTime = now;
+        event.preventDefault(); // Prevent default touch behavior
 
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+        const x = (event.touches[0].clientX - rect.left) * scaleX;
+        const y = (event.touches[0].clientY - rect.top) * scaleY;
 
-        activeDucks.forEach(duck => {
-            const minAreaX = duck.x - duck.size;
-            const maxAreaX = duck.x + duck.size / 2;
-            const minAreaY = duck.y - duck.size;
-            const maxAreaY = duck.y + duck.size / 2;
-
-            if (x > minAreaX && x < maxAreaX && y > minAreaY && y < maxAreaY) {
-                // Duck hit
-                const blood = new Image();
-                blood.src = 'assets/images/sprites/blood-splatter.jpg';
-                ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
-                duck.state = "dead";
-                duck.fallSpeed = 15;
-                gameState.score += 100;
-                document.getElementById('score').innerText = gameState.score;
-                duckHit = true;
-            }
-        });
-
-        if (!duckHit) {
-            // Missed a duck
-            gameState.misses++;
-            document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
-            gameState.score = Math.max(0, gameState.score - 50);
-            document.getElementById('score').innerText = gameState.score;
-
-            if (gameState.misses >= gameState.maxMisses) {
-                endLevel(gameState, ctx, canvas); // End the level immediately on too many misses
-            }
-        }
-
-        // Check if all ducks are gone
-        checkForEndOfLevel(gameState, ctx, canvas);
-    };
+        processHit(x, y, gameState, ctx, canvas);
+    });
 
     console.log(`Started Level ${gameState.level}`);
 }
+
+
+function processHit(x, y, gameState, ctx, canvas) {
+    let duckHit = false;
+    activeDucks.forEach(duck => {
+        // Adjust the hitbox with padding to improve touch accuracy
+        const hitboxPadding = 10; // Adjust this value as needed
+        const minAreaX = duck.x - hitboxPadding;
+        const maxAreaX = duck.x + duck.size + hitboxPadding;
+        const minAreaY = duck.y - hitboxPadding;
+        const maxAreaY = duck.y + duck.size + hitboxPadding;
+
+        console.log(`Duck Hitbox: X(${minAreaX} - ${maxAreaX}), Y(${minAreaY} - ${maxAreaY})`);
+
+        if (x > minAreaX && x < maxAreaX && y > minAreaY && y < maxAreaY) {
+            console.log("Duck hit!");
+            const blood = new Image();
+            blood.src = 'assets/images/sprites/blood-splatter.jpg';
+            ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
+            duck.state = "dead";
+            duck.fallSpeed = 15;
+            gameState.score += 100;
+            document.getElementById('score').innerText = gameState.score;
+            duckHit = true;
+        }
+    });
+
+    if (!duckHit) {
+        console.log("Missed!");
+        gameState.misses++;
+        document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
+        gameState.score = Math.max(0, gameState.score - 50);
+        document.getElementById('score').innerText = gameState.score;
+
+        if (gameState.misses >= gameState.maxMisses) {
+            endLevel(gameState, ctx, canvas); // End the level immediately on too many misses
+        }
+    }
+
+    // Check if all ducks are gone
+    checkForEndOfLevel(gameState, ctx, canvas);
+}
+
 
 function checkForEndOfLevel(gameState, ctx, canvas) {
     console.log(`Checking for end of level. Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
