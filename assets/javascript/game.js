@@ -120,7 +120,7 @@ function playGame() {
     };
 
     let gameContent = `
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas" width="1000" height="600"></canvas>
     <p id="display-score">Score: <span id="score">0</span></p>
     <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
     <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
@@ -203,9 +203,16 @@ function endGameAndReturnToMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    // Remove the Next Level button if it exists
+    const nextButton = document.querySelector('button[data-role="next-level"]');
+    if (nextButton) {
+        document.body.removeChild(nextButton);
+    }
+
     // Return to the main menu
     showMainMenu();
 }
+
 
 
 /**
@@ -370,9 +377,6 @@ function endLevel(gameState, ctx, canvas) {
 
     document.body.appendChild(nextButton);
 }
-
-
-
 
 
 /**
