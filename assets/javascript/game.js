@@ -130,6 +130,14 @@ function playGame() {
     // Reattach event listeners to the buttons
     setupMenuButtons();
 
+    // Add event listener to the "Back to Main Menu" button
+    const backButton = document.getElementById('back-to-menu');
+    if (backButton) {
+        backButton.addEventListener('click', function () {
+            endGameAndReturnToMenu();
+        });
+    }
+
     const canvas = document.getElementById('gameCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
@@ -138,6 +146,29 @@ function playGame() {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
+
+function endGameAndReturnToMenu() {
+    // Stop all ongoing game processes
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    // Clear intervals and active ducks
+    duckIntervals.forEach(interval => clearInterval(interval));
+    duckIntervals = [];
+    activeDucks = [];
+
+    // Clear the canvas
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Return to the main menu
+    showMainMenu();
+}
+
 
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
