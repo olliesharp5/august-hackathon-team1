@@ -4,7 +4,7 @@ Proudly present our retro game: DuckHunt Reloaded
 
 ![Am I responsive](#)
 
-[View DuckHunt Reloaded github pages ](#)
+[View DuckHunt Reloaded live link ](https://olliesharp5.github.io/august-hackathon-team1/)
 
 # Overview
 
@@ -192,7 +192,7 @@ HTML5, CSS, Javascript
 Github Pages was used to deploy the live website. The instructions to achieve this are below:
 
 1. Log in (or sign up) to Github.
-2. Find the repository for this project, Nmyhi/cogniCraft.
+2. Find the repository for this project, olliesharp5/august-hackathon-team1.
 3. Click on the Settings link.
 4. Click on the Pages link in the left hand side navigation bar.
 5. In the Source section, choose main from the drop down select branch menu. Select Root from the drop down select folder menu.
@@ -202,18 +202,18 @@ Github Pages was used to deploy the live website. The instructions to achieve th
 
 #### How to Fork
 
-To fork the Nmyhi/cogniCraft repository:
+To fork the olliesharp5/august-hackathon-team1 repository:
 
 1. Log in (or sign up) to Github.
-2. Go to the repository for this project, Nmyhi/cogniCraft.
+2. Go to the repository for this project, olliesharp5/august-hackathon-team1.
 3. Click the Fork button in the top right corner.
 
 #### How to Clone
 
-To clone the Nmyhi/cogniCraft:
+To clone the olliesharp5/august-hackathon-team1:
 
 1. Log in (or sign up) to GitHub.
-2. Go to the repository for this project, Nmyhi/cogniCraft.
+2. Go to the repository for this project, olliesharp5/august-hackathon-team1.
 3. Click on the code button, select whether you would like to clone with HTTPS, SSH or GitHub CLI and copy the link shown.
 4. Open the terminal in your code editor and change the current working directory to the location you want to use for the cloned directory.
 5. Type 'git clone' into the terminal and then paste the link you copied in step 3. Press enter.
