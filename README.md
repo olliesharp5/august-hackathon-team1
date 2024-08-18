@@ -221,24 +221,49 @@ To clone the olliesharp5/august-hackathon-team1:
 
 * Manual Testing:
 
+Game functions have been tested manually throughout the whole developement process on various hand held devices and desktop devices.
+
 * Found bugs:
 
-- Bug 1: [Title of Bug] 
-  - Description:
+- Bug 1: Gunshot sound not playing in the deployed version.
+  - Description: Gunshot sound not playing in the deployed version due to a rooting issue.
   - Steps to Reproduce:
-    1. [Step 1]
-    2. [Step 2]
-    3. [Step 3]
-  - Expected Outcome: [Description of what should happen]
-  - Actual Outcome: [Description of what actually happens]
+    1. [Step 1] correct the routing of the sound file form : new Audio('../assets/sounds/gunshot.mp3');
+    2. [Step 2] test the gunshot in the deployed version
+  - Expected Outcome: gunshot sound plays in deployed version.
+  - Actual Outcome: gunshot sound plays in deployed version.
 
-* Corrected bugs:
+- Bug 2: Back to main menu button does not work on the leaderboard.
+  - Description: Back to main menu button does not work on the leaderboard.
+  - Steps to Reproduce:
+    1. [Step 1] Fix the button.
+    2. [Step 2] Test the button.
+  - Expected Outcome: when we push the button the game rerenders the main menu.
+  - Actual Outcome: when we push the button the game rerenders the main menu.
 
-- Bug 1: [Title of Bug] 
-  - Description: [Brief description of the bug]
-  - Fix Implemented: [Description of the solution implemented]
-  - Testing After Fix: 
+  - Bug 3: Misses counter issues.
+  - Description: When the game displays levelx get ready the user can shoot and the game counts the misses which is not ideal.
+  - Steps to Reproduce:
+    1. [Step 1] Implement logic for checking for ducks spawning and enable the counter just then.
+    2. [Step 2] Test the implementation.
+  - Expected Outcome: The counter not counts the misses before the ducks spawn.
+  - Actual Outcome: The counter not counts the misses before the ducks spawn.
 
+  - Bug 4: The game not displaying the top score.
+  - Description: The game is not displaying the top score in the main menu.
+  - Steps to Reproduce:
+    1. [Step 1] Fix the top score display.
+    2. [Step 2] Test the top score display.
+  - Expected Outcome: The top score is visible in the main menu.
+  - Actual Outcome: The top score is visible in the main menu.
+
+  - Bug 5: Sometimes on higher levels the ducks show 'traces' for few seconds.
+  - Description: Sometimes on higher levels the ducks show 'traces' for few seconds.
+  - Steps to Reproduce:
+    1. [Step 1] Check and fix the logic.
+    2. [Step 2] Manual test the gameplay.
+  - Expected Outcome: The birds are not leaving 'traces' anumore.
+  - Actual Outcome: The birds are not leaving 'traces' anumore.
 
 ## Credits
 
@@ -254,11 +279,12 @@ All the codes in this Repo was developed by us!
 
 ### Content
 
-
+This content has been created by us - Retro Rascals -
 
 ###  Media
 
-
+Every asset and sound in the project is , loyalty free, free to use for sommercial purposes.
   
 ###  Acknowledgments
 
+Thanks to CodeInstitute for creating the Event!
