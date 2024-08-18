@@ -37,19 +37,20 @@ async function showMainMenu() {
 
     const mainMenuContent = `
     <div class="menu-container">
-        <h1 id="main-title">DuckHunt Reloaded</h1>
+        <h1 class="main-heading">DuckHunt Reloaded</h1>
+        <h1 class="main-heading">Leaderboard</h1>
         <button class="menu-item" data-type="play">Play</button><br>
         <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
         <h1 id="top-score">${topScoreText}</h1>
     </div>
-    `;
+    `;    
 }
 
 async function leaderBoard() {
     const leaderboard = await getLeaderboard();
     let leaderboardContent = `
     <div class="menu-container">
-        <h1>Leaderboard</h1>
+        <h1 class="main-heading">Leaderboard</h1>
         <ul>
             ${leaderboard.map(entry => `<li>${entry.username}: ${entry.score}</li>`).join('')}
         </ul>
