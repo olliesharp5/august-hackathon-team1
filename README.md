@@ -19,7 +19,6 @@ Team Members:
 - [Mihály](https://github.com/Nmyhi)
 - [Chris](https://github.com/Chris-Tranter)
 - [Oliver](https://github.com)
-- 
 
 The goal of this Hackathon event is to create a Retro Game, including the use of 8 bit graphics, sound effects and music. As a group we came together to discuss previous retro games we have enjoyed including Tetris, Road Rash, Z, Worms, Duck Hunt etc.
 
@@ -220,13 +219,38 @@ To clone the olliesharp5/august-hackathon-team1:
 
 ## Testing
 
+* Manual Testing:
+
+* Found bugs:
+
+- Bug 1: [Title of Bug] 
+  - Description:
+  - Steps to Reproduce:
+    1. [Step 1]
+    2. [Step 2]
+    3. [Step 3]
+  - Expected Outcome: [Description of what should happen]
+  - Actual Outcome: [Description of what actually happens]
+
+* Corrected bugs:
+
+- Bug 1: [Title of Bug] 
+  - Description: [Brief description of the bug]
+  - Fix Implemented: [Description of the solution implemented]
+  - Testing After Fix: 
 
 
 ## Credits
 
+- [Jaimie](https://github.com/JaimieHemmings)
+- [Noah](https://github.com/Noah-Samawi)
+- [Mihály](https://github.com/Nmyhi)
+- [Chris](https://github.com/Chris-Tranter)
+- [Oliver](https://github.com)
 
 ### Code Used
 
+All the codes in this Repo was developed by us!
 
 ### Content
 
@@ -237,3 +261,4 @@ To clone the olliesharp5/august-hackathon-team1:
 
   
 ###  Acknowledgments
+
