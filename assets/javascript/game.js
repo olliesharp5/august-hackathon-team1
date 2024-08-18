@@ -121,7 +121,8 @@ function playGame() {
     };
 
     let gameContent = `
-    <canvas id="gameCanvas" width="1000" height="600"></canvas>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="flash-overlay"></div>
     <p id="display-score">Score: <span id="score">0</span></p>
     <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
     <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
@@ -144,9 +145,21 @@ function playGame() {
         const ctx = canvas.getContext('2d');
         startLevel(gameState, ctx, canvas);
 
+        const flashOverlay = document.getElementById('flash-overlay');
+
+        // Function to handle the screen flash
+        function flashScreen() {
+            flashOverlay.style.opacity = 1;
+            setTimeout(() => {
+                flashOverlay.style.opacity = 0;
+            }, 20); // Duration of the flash in milliseconds
+        }
+
         // Set up the click handler for shooting ducks
         canvas.onclick = function (event) {
             if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
+
+            flashScreen(); // Trigger the flash effect
 
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
             gunshot.play();
@@ -170,6 +183,8 @@ function playGame() {
 
             if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
 
+            flashScreen(); // Trigger the flash effect
+
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
@@ -184,6 +199,8 @@ function playGame() {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
+
+
 
 
 function endGameAndReturnToMenu() {
