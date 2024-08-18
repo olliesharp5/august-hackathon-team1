@@ -152,7 +152,7 @@ function playGame() {
             flashOverlay.style.opacity = 1;
             setTimeout(() => {
                 flashOverlay.style.opacity = 0;
-            }, 20); // Duration of the flash in milliseconds
+            }, 70); // Duration of the flash in milliseconds
         }
 
         // Set up the click handler for shooting ducks
