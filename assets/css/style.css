@@ -26,6 +26,7 @@ body:after {
     backdrop-filter: blur(10px);
 }
 
+
 #flash-overlay {
     position: absolute;
     top: 0;
@@ -211,6 +212,7 @@ h3, h4, p {
     #game-area {
         padding: 1rem;
         max-width: 100%;
+        margin-top: 15vh;
     }
 
     canvas {
