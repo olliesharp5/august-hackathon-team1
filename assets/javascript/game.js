@@ -12,11 +12,13 @@ function setupMenuButtons() {
     let buttons = document.getElementsByTagName("button");
     for (let button of buttons) {
         button.addEventListener("click", function () {
-            if (this.getAttribute("data-type") === "play") {
+            const dataType = this.getAttribute("data-type");
+            console.log(`Button clicked: ${dataType}`);
+            if (dataType === "play") {
                 playGame();
-            } else if (this.getAttribute("data-type") === "leaderboard") {
+            } else if (dataType === "leaderboard") {
                 leaderBoard();
-            } else if (this.getAttribute("data-type") === "menu") {
+            } else if (dataType === "menu") {
                 showMainMenu();
             }
         });
@@ -35,16 +37,30 @@ async function showMainMenu() {
         topScoreText = 'No scores yet.';
     }
 
+    // Prepare the main menu content
     const mainMenuContent = `
     <div class="menu-container">
         <h1 class="main-heading">DuckHunt Reloaded</h1>
-        <h1 class="main-heading">Leaderboard</h1>
         <button class="menu-item" data-type="play">Play</button><br>
         <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
-        <h1 id="top-score">${topScoreText}</h1>
+        <h1 id="top-score" class="main-heading">${topScoreText}</h1>
+        
     </div>
-    `;    
+    `;
+
+    // Ensure the game area exists and then update its content
+    const gameArea = document.getElementById('game-area');
+    if (gameArea) {
+        gameArea.innerHTML = mainMenuContent;
+    } else {
+        console.error('game-area element not found!');
+        return;
+    }
+
+    // Reattach event listeners to the new buttons
+    setupMenuButtons();
 }
+
 
 async function leaderBoard() {
     const leaderboard = await getLeaderboard();
@@ -81,6 +97,12 @@ function playGame() {
         document.body.appendChild(gameArea);
     }
 
+    // Remove the instructions toggle if it exists
+    const instructionsToggle = document.getElementById('instructions-toggle');
+    if (instructionsToggle) {
+        instructionsToggle.remove();
+    }
+
     // Cancel any existing animation frame to prevent overlaps
     if (animationFrameId) {
         cancelAnimationFrame(animationFrameId);
@@ -101,8 +123,12 @@ function playGame() {
     <canvas id="gameCanvas" width="800" height="600"></canvas>
     <p id="display-score">Score: <span id="score">0</span></p>
     <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
+    <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
     `;
     gameArea.innerHTML = gameContent;
+
+    // Reattach event listeners to the buttons
+    setupMenuButtons();
 
     const canvas = document.getElementById('gameCanvas');
     if (canvas) {
@@ -112,7 +138,6 @@ function playGame() {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
-
 
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
