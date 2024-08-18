@@ -143,6 +143,7 @@ function startLevel(gameState, ctx, canvas) {
         let duckHit = false;
 
         const gunshot = new Audio('../assets/sounds/gunshot.mp3');
+        gunshot.volume = 0.2;
         gunshot.play();
 
         const rect = canvas.getBoundingClientRect();
