@@ -250,14 +250,20 @@ Game functions have been tested manually throughout the whole developement proce
   - Actual Outcome: The counter not counts the misses before the ducks spawn.
 
   - Bug 4: The game not displaying the top score.
-  - Description: The game is not displaying the top score in the main menu
+  - Description: The game is not displaying the top score in the main menu.
   - Steps to Reproduce:
-    1. [Step 1] Fix the top score display
-    2. [Step 2] Test the top score display
-  - Expected Outcome: The top score is visible in the main menu
-  - Actual Outcome: The top score is visible in the main menu
+    1. [Step 1] Fix the top score display.
+    2. [Step 2] Test the top score display.
+  - Expected Outcome: The top score is visible in the main menu.
+  - Actual Outcome: The top score is visible in the main menu.
 
-  
+  - Bug 5: Sometimes on higher levels the ducks show 'traces' for few seconds.
+  - Description: Sometimes on higher levels the ducks show 'traces' for few seconds.
+  - Steps to Reproduce:
+    1. [Step 1] Check and fix the logic.
+    2. [Step 2] Manual test the gameplay.
+  - Expected Outcome: The birds are not leaving 'traces' anumore.
+  - Actual Outcome: The birds are not leaving 'traces' anumore.
 
 ## Credits
 
