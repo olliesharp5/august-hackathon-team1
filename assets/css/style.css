@@ -42,7 +42,7 @@ body:after {
 }
 
 .main-heading {
-    font-size: 10rem;
+    font-size: 4rem; /* Updated size for Leaderboard */
     color: aqua;
     text-align: center;
 }
@@ -118,10 +118,6 @@ canvas:hover {
     cursor: url('../images/sprites/cursor.png'), auto;
 }
 
-li {
-    list-style-type: none
-}
-
 /* Style the unordered list (ul) */
 ul {
     list-style-type: none; 
@@ -129,18 +125,18 @@ ul {
     margin: 0; 
     background-color: rgba(0, 0, 0, 0.7); 
     border-radius: 10px; 
-    width: 80%; 
-    max-width: 600px; 
+    width: 70%; /* Slightly smaller width */
+    max-width: 500px; /* Slightly smaller max-width */
     margin: 1rem auto; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
 }
 
 /* Style individual list items (li) */
 ul li {
-    padding: 1rem; /* Space inside each list item */
+    padding: 0.8rem; /* Slightly smaller padding */
     color: #fff; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
-    font-size: 1.2em; 
+    font-size: 1em; /* Slightly smaller font-size */
     display: flex; 
     justify-content: space-between; /* Space between username and score */
 }
@@ -149,12 +145,10 @@ ul li:last-child {
     border-bottom: none;
 }
 
-
 ul li:hover {
     background-color: rgba(255, 255, 255, 0.2); 
-    cursor: pointer; /
+    cursor: pointer;
 }
-
 
 /* Media Queries for Mobile Devices */
 @media (max-width: 768px) {
@@ -165,6 +159,20 @@ ul li:hover {
     #main-title {
         font-size: 5rem;
         padding: 0 1rem;
+    }
+
+    .main-heading {
+        font-size: 3rem; /* Adjust font size for Leaderboard on smaller screens */
+    }
+
+    ul {
+        width: 90%; /* Full width for smaller screens */
+        max-width: 100%; /* Remove max-width for smaller screens */
+    }
+
+    ul li {
+        padding: 0.6rem; /* Smaller padding for list items */
+        font-size: 0.9em; /* Smaller font size for list items */
     }
 
     #top-score {
@@ -180,7 +188,7 @@ ul li:hover {
         top: 15px;
         right: 2%;
         svg {
-            scale: 1.2;
+            transform: scale(1.2);
         }
     }
 
@@ -200,6 +208,15 @@ ul li:hover {
         font-size: 3.5rem;
     }
 
+    .main-heading {
+        font-size: 2.5rem; /* Further adjust font size for Leaderboard on smaller screens */
+    }
+
+    ul li {
+        padding: 0.5rem; /* Further smaller padding for list items */
+        font-size: 0.8em; /* Further smaller font size for list items */
+    }
+
     #top-score {
         font-size: 2em;
     }
@@ -213,7 +230,7 @@ ul li:hover {
         top: 10px;
         right: 2%;
         svg {
-            scale: 1;
+            transform: scale(1);
         }
     }
 }
