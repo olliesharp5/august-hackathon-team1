@@ -130,14 +130,83 @@ function playGame() {
     // Reattach event listeners to the buttons
     setupMenuButtons();
 
+    // Add event listener to the "Back to Main Menu" button
+    const backButton = document.getElementById('back-to-menu');
+    if (backButton) {
+        backButton.addEventListener('click', function () {
+            endGameAndReturnToMenu();
+        });
+    }
+
     const canvas = document.getElementById('gameCanvas');
     if (canvas) {
         const ctx = canvas.getContext('2d');
         startLevel(gameState, ctx, canvas);
+
+        // Set up the click handler for shooting ducks
+        canvas.onclick = function (event) {
+            if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
+
+            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.play();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            processHit(x, y, gameState, ctx, canvas);
+        };
+
+        // Set up the touch handler for shooting ducks on touch devices
+        canvas.addEventListener('touchstart', function (event) {
+            const now = Date.now();
+            if (now - lastTouchTime < 300) {
+                return; // Ignore if the last touch event was too recent
+            }
+            lastTouchTime = now;
+            event.preventDefault(); // Prevent default touch behavior
+
+            if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
+
+            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.play();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const x = (event.touches[0].clientX - rect.left) * scaleX;
+            const y = (event.touches[0].clientY - rect.top) * scaleY;
+
+            processHit(x, y, gameState, ctx, canvas);
+        });
     } else {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
+
+
+function endGameAndReturnToMenu() {
+    // Stop all ongoing game processes
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
+    // Clear intervals and active ducks
+    duckIntervals.forEach(interval => clearInterval(interval));
+    duckIntervals = [];
+    activeDucks = [];
+
+    // Clear the canvas
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // Return to the main menu
+    showMainMenu();
+}
+
 
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
@@ -148,7 +217,7 @@ function startLevel(gameState, ctx, canvas) {
     // Reset game state for the new level
     gameState.misses = 0;
     gameState.roundOver = false;
-    gameState.levelTransitioning = false;
+    gameState.levelTransitioning = true; // Set to true during the transition
     activeDucks = []; // Clear active ducks array
 
     // Reset UI elements
@@ -162,48 +231,22 @@ function startLevel(gameState, ctx, canvas) {
     // Clear the canvas before starting a new level
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Spawn ducks for the current level
-    spawnDucks(gameState, ctx); // Start spawning ducks
+    // Show "Get ready for Level #" message
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-    // Start the animation loop for drawing ducks
-    animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx));
+    // Delay for 2 seconds before starting the level
+    setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the message
+        gameState.levelTransitioning = false; // Allow interactions as the level starts
 
-    // Set up the click handler for shooting ducks
-    canvas.onclick = function (event) {
-        if (gameState.roundOver) return; // Stop interaction if the round is over
+        spawnDucks(gameState, ctx); // Start spawning ducks only after the message is cleared
+        animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx)); // Start the animation loop
 
-        const gunshot = new Audio('/assets/sounds/gunshot.mp3');
-        gunshot.play();
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
-        const x = (event.clientX - rect.left) * scaleX;
-        const y = (event.clientY - rect.top) * scaleY;
-
-        processHit(x, y, gameState, ctx, canvas);
-    };
-
-    // Set up the touch handler for shooting ducks on touch devices
-    canvas.addEventListener('touchstart', function (event) {
-        const now = Date.now();
-        if (now - lastTouchTime < 300) {
-            return; // Ignore if the last touch event was too recent
-        }
-        lastTouchTime = now;
-        event.preventDefault(); // Prevent default touch behavior
-
-        const gunshot = new Audio('/assets/sounds/gunshot.mp3');
-        gunshot.play();
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
-        const x = (event.touches[0].clientX - rect.left) * scaleX;
-        const y = (event.touches[0].clientY - rect.top) * scaleY;
-
-        processHit(x, y, gameState, ctx, canvas);
-    });
-
-    console.log(`Started Level ${gameState.level}`);
+        console.log(`Started Level ${gameState.level}`);
+    }, 2000);
 }
 
 
@@ -211,7 +254,7 @@ function processHit(x, y, gameState, ctx, canvas) {
     let duckHit = false;
     activeDucks.forEach(duck => {
         // Adjust the hitbox with padding to improve touch accuracy
-        const hitboxPadding = 10; // Adjust this value as needed
+        const hitboxPadding = 20;
         const minAreaX = duck.x - hitboxPadding;
         const maxAreaX = duck.x + duck.size + hitboxPadding;
         const minAreaY = duck.y - hitboxPadding;
@@ -275,15 +318,33 @@ function endLevel(gameState, ctx, canvas) {
     // Clear the canvas to remove any remaining ducks or trails
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Display "Level Complete" message
+    // Determine the appropriate message
+    let message;
+    if (gameState.misses >= gameState.maxMisses) {
+        message = `You missed too many shots! `;
+    } else {
+        message = `Well done, you only missed ${gameState.misses} shot${gameState.misses !== 1 ? 's' : ''}. `;
+    }
+
+    if (gameState.level < 5) {
+        message += `Proceed to the next level!`;
+    } else {
+        message += `GAME OVER!`;
+    }
+
+    // Display the message on the canvas
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.fillText(`Level ${gameState.level} complete!`, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
+    ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
 
-    // Create the "Next Level" button
+    // Create the button
     const nextButton = document.createElement('button');
-    nextButton.innerText = 'Next Level';
+    if (gameState.level < 5) {
+        nextButton.innerText = 'Next Level';
+    } else {
+        nextButton.innerText = 'Add to Leaderboard';
+    }
     nextButton.style.position = 'absolute';
     nextButton.style.top = '60%';
     nextButton.style.left = '50%';
@@ -296,14 +357,20 @@ function endLevel(gameState, ctx, canvas) {
     nextButton.style.cursor = 'pointer';
     nextButton.style.fontFamily = 'Arial, sans-serif';
 
+    // Set the appropriate action for the button
     nextButton.onclick = function () {
         document.body.removeChild(nextButton);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas before starting the next level
-        nextLevel(gameState, ctx, canvas); // Call nextLevel here to start the next level
+        if (gameState.level < 5) {
+            nextLevel(gameState, ctx, canvas); // Proceed to the next level
+        } else {
+            gameOver(gameState); // End the game and add to leaderboard
+        }
     };
 
     document.body.appendChild(nextButton);
 }
+
 
 
 
