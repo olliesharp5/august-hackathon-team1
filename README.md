@@ -241,6 +241,24 @@ Game functions have been tested manually throughout the whole developement proce
   - Expected Outcome: when we push the button the game rerenders the main menu.
   - Actual Outcome: when we push the button the game rerenders the main menu.
 
+  - Bug 3: Misses counter issues.
+  - Description: When the game displays levelx get ready the user can shoot and the game counts the misses which is not ideal.
+  - Steps to Reproduce:
+    1. [Step 1] Implement logic for checking for ducks spawning and enable the counter just then.
+    2. [Step 2] Test the implementation.
+  - Expected Outcome: The counter not counts the misses before the ducks spawn.
+  - Actual Outcome: The counter not counts the misses before the ducks spawn.
+
+  - Bug 4: The game not displaying the top score.
+  - Description: The game is not displaying the top score in the main menu
+  - Steps to Reproduce:
+    1. [Step 1] Fix the top score display
+    2. [Step 2] Test the top score display
+  - Expected Outcome: The top score is visible in the main menu
+  - Actual Outcome: The top score is visible in the main menu
+
+  
+
 ## Credits
 
 - [Jaimie](https://github.com/JaimieHemmings)
