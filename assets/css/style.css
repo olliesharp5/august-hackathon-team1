@@ -39,6 +39,12 @@ body:after {
     font-size: 10rem;
     color: aqua;
     text-align: center;
+    margin: 0;
+}
+
+#top-score {
+    font-size: 2.5em;
+    color: #a87d32;
 }
 
 .main-heading {
@@ -123,31 +129,27 @@ ul {
     list-style-type: none; 
     padding: 0; 
     margin: 0; 
-    background-color: rgba(0, 0, 0, 0.7); 
     border-radius: 10px; 
     width: 70%; /* Slightly smaller width */
     max-width: 500px; /* Slightly smaller max-width */
-    margin: 1rem auto; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+    margin: 1rem auto;
+    width: fit-content;
 }
 
 /* Style individual list items (li) */
 ul li {
     padding: 0.8rem; /* Slightly smaller padding */
-    color: #fff; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3); 
-    font-size: 1em; /* Slightly smaller font-size */
-    display: flex; 
-    justify-content: space-between; /* Space between username and score */
+    color: #a87d32; 
+    font-size: 1.5em; /* Slightly smaller font-size */
+    justify-content: center; /* Space between username and score */
 }
 
 ul li:last-child {
     border-bottom: none;
 }
 
-ul li:hover {
-    background-color: rgba(255, 255, 255, 0.2); 
-    cursor: pointer;
+h3, h4, p {
+    color: #a87d32;
 }
 
 /* Media Queries for Mobile Devices */
@@ -177,6 +179,7 @@ ul li:hover {
 
     #top-score {
         font-size: 2.5em;
+        color: #a87d32;
     }
 
     button {
@@ -219,6 +222,7 @@ ul li:hover {
 
     #top-score {
         font-size: 2em;
+        color: #a87d32;
     }
 
     button {
@@ -251,5 +255,9 @@ ul li:hover {
     transform: translate(-50%, -50%);
     padding: 15px;
     border: 2px solid #000;
-    background: #fff;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
 }
