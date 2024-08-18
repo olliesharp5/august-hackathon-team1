@@ -297,7 +297,8 @@ ctx.fillText(
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
         // Show "Get ready for Level #" message
-        ctx.font = "30px 'Jersey 10', sans-serif";
+
+        ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
