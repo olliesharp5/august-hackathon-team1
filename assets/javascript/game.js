@@ -169,6 +169,7 @@ function playGame() {
             flashScreen(); // Trigger the flash effect
 
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
@@ -193,6 +194,7 @@ function playGame() {
             flashScreen(); // Trigger the flash effect
 
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
