@@ -30,6 +30,8 @@ body:after {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 2rem;
+    text-align: center;
 }
 
 #main-title {
@@ -55,6 +57,14 @@ button {
     font-style: normal;
     font-size: 2em;
     margin: 5px;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:active {
+    transform: scale(0.95);
 }
 
 .hidden {
@@ -89,7 +99,6 @@ button {
     margin: 0 auto;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 2rem;
-    position: relative; /* Ensures any overlay or message is correctly positioned */
 }
 
 canvas {
@@ -105,4 +114,66 @@ canvas {
 
 canvas:hover {
     cursor: url('../images/sprites/cursor.png'), auto;
+}
+
+/* Media Queries for Mobile Devices */
+@media (max-width: 768px) {
+    body {
+        padding-top: 3rem;
+    }
+
+    #main-title {
+        font-size: 5rem;
+        padding: 0 1rem;
+    }
+
+    #top-score {
+        font-size: 2.5em;
+    }
+
+    button {
+        font-size: 1.5em;
+        padding: 0.5rem;
+    }
+
+    #music-controls {
+        top: 15px;
+        right: 2%;
+        svg {
+            scale: 1.2;
+        }
+    }
+
+    #game-area {
+        padding: 1rem;
+        max-width: 100%;
+    }
+
+    canvas {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    #main-title {
+        font-size: 3.5rem;
+    }
+
+    #top-score {
+        font-size: 2em;
+    }
+
+    button {
+        font-size: 1.2em;
+        padding: 0.4rem;
+    }
+
+    #music-controls {
+        top: 10px;
+        right: 2%;
+        svg {
+            scale: 1;
+        }
+    }
 }
