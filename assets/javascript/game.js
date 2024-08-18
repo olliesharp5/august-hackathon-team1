@@ -241,7 +241,7 @@ function startLevel(gameState, ctx, canvas) {
 
     // Load the background image for the current level
     backgroundImage = new Image();
-    backgroundImage.src = `./assets/images/background${gameState.level}.png`;
+    backgroundImage.src = `../images/background${gameState.level}.png`;
 
     backgroundImage.onload = function() {
         ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
