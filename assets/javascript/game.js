@@ -142,10 +142,48 @@ function playGame() {
     if (canvas) {
         const ctx = canvas.getContext('2d');
         startLevel(gameState, ctx, canvas);
+
+        // Set up the click handler for shooting ducks
+        canvas.onclick = function (event) {
+            if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
+
+            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.play();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+
+            processHit(x, y, gameState, ctx, canvas);
+        };
+
+        // Set up the touch handler for shooting ducks on touch devices
+        canvas.addEventListener('touchstart', function (event) {
+            const now = Date.now();
+            if (now - lastTouchTime < 300) {
+                return; // Ignore if the last touch event was too recent
+            }
+            lastTouchTime = now;
+            event.preventDefault(); // Prevent default touch behavior
+
+            if (gameState.roundOver || gameState.levelTransitioning) return; // Stop interaction if the round is over or the level hasn't started
+
+            const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.play();
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
+            const scaleY = canvas.height / rect.height;  // Account for vertical scaling
+            const x = (event.touches[0].clientX - rect.left) * scaleX;
+            const y = (event.touches[0].clientY - rect.top) * scaleY;
+
+            processHit(x, y, gameState, ctx, canvas);
+        });
     } else {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
+
 
 function endGameAndReturnToMenu() {
     // Stop all ongoing game processes
@@ -179,7 +217,7 @@ function startLevel(gameState, ctx, canvas) {
     // Reset game state for the new level
     gameState.misses = 0;
     gameState.roundOver = false;
-    gameState.levelTransitioning = false;
+    gameState.levelTransitioning = true; // Set to true during the transition
     activeDucks = []; // Clear active ducks array
 
     // Reset UI elements
@@ -193,48 +231,22 @@ function startLevel(gameState, ctx, canvas) {
     // Clear the canvas before starting a new level
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Spawn ducks for the current level
-    spawnDucks(gameState, ctx); // Start spawning ducks
+    // Show "Get ready for Level #" message
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-    // Start the animation loop for drawing ducks
-    animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx));
+    // Delay for 3 seconds before starting the level
+    setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the message
+        gameState.levelTransitioning = false; // Allow interactions as the level starts
 
-    // Set up the click handler for shooting ducks
-    canvas.onclick = function (event) {
-        if (gameState.roundOver) return; // Stop interaction if the round is over
+        spawnDucks(gameState, ctx); // Start spawning ducks
+        animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx)); // Start the animation loop
 
-        const gunshot = new Audio('/assets/sounds/gunshot.mp3');
-        gunshot.play();
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
-        const x = (event.clientX - rect.left) * scaleX;
-        const y = (event.clientY - rect.top) * scaleY;
-
-        processHit(x, y, gameState, ctx, canvas);
-    };
-
-    // Set up the touch handler for shooting ducks on touch devices
-    canvas.addEventListener('touchstart', function (event) {
-        const now = Date.now();
-        if (now - lastTouchTime < 300) {
-            return; // Ignore if the last touch event was too recent
-        }
-        lastTouchTime = now;
-        event.preventDefault(); // Prevent default touch behavior
-
-        const gunshot = new Audio('/assets/sounds/gunshot.mp3');
-        gunshot.play();
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
-        const scaleY = canvas.height / rect.height;  // Account for vertical scaling
-        const x = (event.touches[0].clientX - rect.left) * scaleX;
-        const y = (event.touches[0].clientY - rect.top) * scaleY;
-
-        processHit(x, y, gameState, ctx, canvas);
-    });
-
-    console.log(`Started Level ${gameState.level}`);
+        console.log(`Started Level ${gameState.level}`);
+    }, 3000); // 3-second delay for the transition
 }
 
 
