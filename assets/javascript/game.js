@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
     showMainMenu();  // Display the main menu with the top score when the page loads
 });
 
+/**
+ * Sets up event listeners for menu buttons and handles their actions based on the button clicked.
+ */
 function setupMenuButtons() {
     let buttons = document.getElementsByTagName("button");
     for (let button of buttons) {
@@ -25,6 +28,9 @@ function setupMenuButtons() {
     }
 }
 
+/**
+ * Displays the main menu and shows the top score from the leaderboard.
+ */
 async function showMainMenu() {
     let topScoreText = 'Loading...';
 
@@ -44,7 +50,6 @@ async function showMainMenu() {
         <button class="menu-item" data-type="play">Play</button><br>
         <button class="menu-item" data-type="leaderboard">Leaderboard</button><br>
         <h1 id="top-score" class="main-heading">${topScoreText}</h1>
-        
     </div>
     `;
 
@@ -61,7 +66,9 @@ async function showMainMenu() {
     setupMenuButtons();
 }
 
-
+/**
+ * Displays the leaderboard with player scores and provides options to play again or return to the main menu.
+ */
 async function leaderBoard() {
     const leaderboard = await getLeaderboard();
     let leaderboardContent = `
@@ -86,8 +93,8 @@ let duckIntervals = []; // Global array to keep track of all duck intervals
 let backgroundImage;
 
 /**
- * Sets up the initial game state and starts the first level
- **/
+ * Initializes the game, setting up the game area and starting the first level.
+ */
 function playGame() {
     let gameArea = document.getElementById('game-area');
 
@@ -162,6 +169,7 @@ function playGame() {
             flashScreen(); // Trigger the flash effect
 
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
@@ -186,6 +194,7 @@ function playGame() {
             flashScreen(); // Trigger the flash effect
 
             const gunshot = new Audio('/assets/sounds/gunshot.mp3');
+            gunshot.volume = 0.5;
             gunshot.play();
             const rect = canvas.getBoundingClientRect();
             const scaleX = canvas.width / rect.width;    // Account for horizontal scaling
@@ -200,9 +209,9 @@ function playGame() {
     }
 }
 
-
-
-
+/**
+ * Ends the game, clears ongoing processes, and returns to the main menu.
+ */
 function endGameAndReturnToMenu() {
     // Stop all ongoing game processes
     if (animationFrameId) {
@@ -231,11 +240,9 @@ function endGameAndReturnToMenu() {
     showMainMenu();
 }
 
-
-
 /**
- * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
- **/
+ * Starts a new level, resetting the game state and spawning the appropriate number of ducks.
+ */
 let lastTouchTime = 0;
 
 function startLevel(gameState, ctx, canvas) {
@@ -309,8 +316,9 @@ ctx.fillText(
     };
 }
 
-
-
+/**
+ * Handles the logic when a player clicks or taps to shoot, determining if a duck was hit or missed.
+ */
 function processHit(x, y, gameState, ctx, canvas) {
     let duckHit = false;
     activeDucks.forEach(duck => {
@@ -352,7 +360,9 @@ function processHit(x, y, gameState, ctx, canvas) {
     checkForEndOfLevel(gameState, ctx, canvas);
 }
 
-
+/**
+ * Checks if the current level should end based on the number of remaining ducks and active ducks.
+ */
 function checkForEndOfLevel(gameState, ctx, canvas) {
     console.log(`Checking for end of level. Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
     if (activeDucks.length === 0 && gameState.remainingDucks === 0) {
@@ -363,7 +373,9 @@ function checkForEndOfLevel(gameState, ctx, canvas) {
     }
 }
 
-
+/**
+ * Ends the current level, stops animations, and displays an end-of-level message with options to proceed.
+ */
 function endLevel(gameState, ctx, canvas) {
     if (gameState.levelTransitioning) return;
 
@@ -438,7 +450,7 @@ function endLevel(gameState, ctx, canvas) {
 }
 
 /**
- * Spawns the required number of ducks based on the level
+ * Spawns ducks based on the current level and handles their movement and behavior.
  */
 function spawnDucks(gameState, ctx) {
     if (gameState.roundOver) return; // Stop spawning if the round is over
@@ -466,9 +478,8 @@ function spawnDucks(gameState, ctx) {
     }
 }
 
-
 /**
- * Creates a new duck object for the game
+ * Creates a duck object with properties based on the current level, including size, speed, and movement direction.
  */
 function createDuck(level, canvas) {
     const duckSize = 50 - (level * 5); // Decrease hitbox size with level
@@ -507,7 +518,7 @@ function createDuck(level, canvas) {
 }
 
 /**
- * Animates the duck
+ * Handles the animation of each duck, including movement, wall bouncing, and removal when out of bounds or dead.
  */
 function animateDuck(duck, gameState, ctx) {
     const canvas = ctx.canvas;
@@ -561,9 +572,8 @@ function animateDuck(duck, gameState, ctx) {
     duckIntervals.push(interval); // Store the interval so we can clear it later
 }
 
-
 /**
- * Draws all ducks on the canvas
+ * Draws all active ducks on the canvas, ensuring smooth animation and background rendering.
  */
 function drawAllDucks(ctx) {
     const canvas = ctx.canvas;
@@ -592,9 +602,8 @@ function drawAllDucks(ctx) {
     animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx));
 }
 
-
 /**
- * Draws a single duck on the canvas
+ * Draws a single duck on the canvas, handling both live and dead states with appropriate sprites.
  */
 function drawDuck(duck, ctx) {
     const aliveDuckSprite = new Image();
@@ -642,7 +651,7 @@ function drawDuck(duck, ctx) {
 }
 
 /**
- * Handles leveling up the game
+ * Proceeds to the next level, resetting the game state and displaying a transition message.
  */
 function nextLevel(gameState, ctx, canvas) {
     if (gameState.level < 5) {
@@ -701,10 +710,8 @@ function nextLevel(gameState, ctx, canvas) {
     }
 }
 
-
-
 /**
- * Ends the game, saves the score, and displays the leaderboard
+ * Ends the game, prompts the user for a username to save the score, and displays the leaderboard.
  */
 function gameOver(gameState) {
     // Ensure that score is saved only once and is a valid number
