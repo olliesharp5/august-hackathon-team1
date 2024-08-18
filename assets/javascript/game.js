@@ -83,6 +83,7 @@ async function leaderBoard() {
 let activeDucks = []; // Array to hold all active ducks
 let animationFrameId; // Declare the global variable
 let duckIntervals = []; // Global array to keep track of all duck intervals
+let backgroundImage;
 
 /**
  * Sets up the initial game state and starts the first level
@@ -120,7 +121,7 @@ function playGame() {
     };
 
     let gameContent = `
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <canvas id="gameCanvas" width="1000" height="600"></canvas>
     <p id="display-score">Score: <span id="score">0</span></p>
     <p id="display-misses">Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span></p>
     <button id="back-to-menu" class="menu-item" data-type="menu">Back to Main Menu</button>
@@ -203,9 +204,16 @@ function endGameAndReturnToMenu() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
+    // Remove the Next Level button if it exists
+    const nextButton = document.querySelector('button[data-role="next-level"]');
+    if (nextButton) {
+        document.body.removeChild(nextButton);
+    }
+
     // Return to the main menu
     showMainMenu();
 }
+
 
 
 /**
@@ -231,23 +239,33 @@ function startLevel(gameState, ctx, canvas) {
     // Clear the canvas before starting a new level
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Show "Get ready for Level #" message
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
+    // Load the background image for the current level
+    backgroundImage = new Image();
+    backgroundImage.src = `/assets/images/background${gameState.level}.png`;
 
-    // Delay for 2 seconds before starting the level
-    setTimeout(() => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the message
-        gameState.levelTransitioning = false; // Allow interactions as the level starts
+    backgroundImage.onload = function() {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-        spawnDucks(gameState, ctx); // Start spawning ducks only after the message is cleared
-        animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx)); // Start the animation loop
+        // Show "Get ready for Level #" message
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "center";
+        ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-        console.log(`Started Level ${gameState.level}`);
-    }, 2000);
+        // Delay for 3 seconds before starting the level
+        setTimeout(() => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the message
+            ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height); // Redraw the background after clearing
+            gameState.levelTransitioning = false; // Allow interactions as the level starts
+
+            spawnDucks(gameState, ctx); // Start spawning ducks
+            animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx)); // Start the animation loop
+
+            console.log(`Started Level ${gameState.level}`);
+        }, 3000); // 3-second delay for the transition
+    };
 }
+
 
 
 function processHit(x, y, gameState, ctx, canvas) {
@@ -370,9 +388,6 @@ function endLevel(gameState, ctx, canvas) {
 
     document.body.appendChild(nextButton);
 }
-
-
-
 
 
 /**
@@ -508,6 +523,11 @@ function drawAllDucks(ctx) {
 
     // Clear the entire canvas before drawing the new frame
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Redraw the background image
+    if (backgroundImage) {
+        ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+    }
 
     // Draw all active ducks
     activeDucks.forEach(duck => {
