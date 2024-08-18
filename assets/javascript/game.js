@@ -68,6 +68,8 @@ async function leaderBoard() {
 }
 
 let activeDucks = []; // Array to hold all active ducks
+let animationFrameId; // Declare the global variable
+let duckIntervals = []; // Global array to keep track of all duck intervals
 
 /**
  * Sets up the initial game state and starts the first level
@@ -82,15 +84,20 @@ function playGame() {
         document.body.appendChild(gameArea);
     }
 
+    // Cancel any existing animation frame to prevent overlaps
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+
     const gameState = {
         level: 1,
         remainingDucks: 0,
         misses: 0,
         maxMisses: 3,
         score: 0,
-        totalDucks: 0, // Track the total ducks for the current level
-        roundOver: false, // Flag to indicate if the round is over due to 3 misses
-        levelTransitioning: false // Flag to prevent multiple level transitions
+        totalDucks: 0, 
+        roundOver: false,
+        levelTransitioning: false
     };
 
     let gameContent = `
@@ -101,47 +108,47 @@ function playGame() {
     gameArea.innerHTML = gameContent;
 
     const canvas = document.getElementById('gameCanvas');
-
     if (canvas) {
         const ctx = canvas.getContext('2d');
-
-        // Initialize the game
         startLevel(gameState, ctx, canvas);
     } else {
         console.error("Canvas element not found after attempting to create it!");
     }
 }
 
+
 /**
  * Prepares the game state for a new level by resetting the misses, setting the number of ducks for the level, and spawning them
  **/
 function startLevel(gameState, ctx, canvas) {
-    // Reset the misses and clear any previous ducks from the array
+    // Reset game state for the new level
     gameState.misses = 0;
-    gameState.roundOver = false; // Reset the roundOver flag for the new level
-    gameState.levelTransitioning = false; // Ensure levelTransitioning is reset
-    activeDucks = [];
+    gameState.roundOver = false;
+    gameState.levelTransitioning = false;
+    activeDucks = []; // Clear active ducks array
 
-    // Ensure the UI elements are reset correctly for the new level
+    // Reset UI elements
     document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">0</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
 
-    // Define the number of ducks per level
+    // Define the number of ducks for this level
     const ducksPerRound = [6, 12, 18, 24, 30];
     gameState.totalDucks = ducksPerRound[gameState.level - 1];
     gameState.remainingDucks = gameState.totalDucks;
 
-    spawnDucks(gameState, ctx); // Spawn the initial batch of ducks
+    // Clear the canvas before starting a new level
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    requestAnimationFrame(() => drawAllDucks(ctx)); // Start the centralized drawing loop
+    // Spawn ducks for the current level
+    spawnDucks(gameState, ctx); // Start spawning ducks
 
-    // Ensure the click handler is only set once
+    // Start the animation loop for drawing ducks
+    animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx));
+
+    // Set up the click handler for shooting ducks
     canvas.onclick = function (event) {
-        if (gameState.roundOver || gameState.levelTransitioning) {
-            return; // Do nothing if the round is over or if a level transition is in progress
-        }
+        if (gameState.roundOver) return; // Stop interaction if the round is over
 
         let duckHit = false;
-
         const gunshot = new Audio('../assets/sounds/gunshot.mp3');
         gunshot.volume = 0.2;
         gunshot.play();
@@ -150,7 +157,6 @@ function startLevel(gameState, ctx, canvas) {
         const x = event.clientX - rect.left;
         const y = event.clientY - rect.top;
 
-        // Check if the click hit any of the ducks
         activeDucks.forEach(duck => {
             const minAreaX = duck.x - duck.size;
             const maxAreaX = duck.x + duck.size / 2;
@@ -158,98 +164,125 @@ function startLevel(gameState, ctx, canvas) {
             const maxAreaY = duck.y + duck.size / 2;
 
             if (x > minAreaX && x < maxAreaX && y > minAreaY && y < maxAreaY) {
+                // Duck hit
                 const blood = new Image();
                 blood.src = 'assets/images/sprites/blood-splatter.jpg';
                 ctx.drawImage(blood, duck.x, duck.y, duck.size, duck.size);
                 duck.state = "dead";
                 duck.fallSpeed = 15;
-                gameState.score += 100; // Increase the score
-                document.getElementById('score').innerText = gameState.score; // Update the score display
+                gameState.score += 100;
+                document.getElementById('score').innerText = gameState.score;
                 duckHit = true;
             }
         });
 
-        // If no duck was hit, increment misses
         if (!duckHit) {
+            // Missed a duck
             gameState.misses++;
             document.getElementById("display-misses").innerHTML = `Misses: <span id="misses">${gameState.misses}</span>/<span id="max-misses">${gameState.maxMisses}</span>`;
+            gameState.score = Math.max(0, gameState.score - 50);
+            document.getElementById('score').innerText = gameState.score;
 
-            // Deduct points for a miss
-            gameState.score = Math.max(0, gameState.score - 50); // Ensure score doesn't go below zero
-            document.getElementById('score').innerText = gameState.score; // Update the score display
-
-            // Check if the player has missed too many times
             if (gameState.misses >= gameState.maxMisses) {
-                gameState.roundOver = true; // Set roundOver flag to true
-                gameState.levelTransitioning = true; // Prevent further actions during transition
-                console.log(`Player missed 3 times. Moving to next level.`);
-                activeDucks = []; // Clear the active ducks array
-                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas
-
-                // Display a message
-                ctx.font = "30px Arial";
-                ctx.fillText(`Level ${gameState.level} complete. Get ready for the next level...`, ctx.canvas.width / 2 - 200, ctx.canvas.height / 2);
-
-                // Delay before starting the next level
-                setTimeout(() => {
-                    if (gameState.level < 5) {
-                        gameState.level++;
-                        console.log(`Starting Level ${gameState.level}`);
-
-                        // Start the next level
-                        startLevel(gameState, ctx, canvas); // Ensure canvas is passed correctly
-                    } else {
-                        console.log("You completed all levels!");
-                        gameOver(gameState); // End the game
-                    }
-                }, 3000); // 3-second delay
-                return; // Exit the function to prevent further execution after starting the next level
+                endLevel(gameState, ctx, canvas); // End the level immediately on too many misses
             }
         }
 
-        // Check if all ducks are dead and there are still ducks remaining to be spawned
-        if (activeDucks.length === 0 && gameState.remainingDucks > 0) {
-            spawnDucks(gameState, ctx); // Spawn more ducks if there are ducks remaining
-        } else if (activeDucks.length === 0 && gameState.remainingDucks === 0 && gameState.misses < gameState.maxMisses) {
-            // Check if all ducks are gone and there are no remaining ducks
-            if (gameState.level < 5 && !gameState.levelTransitioning) {
-                // If there are levels left, advance to the next one
-                gameState.levelTransitioning = true; // Prevent multiple transitions
-                console.log(`Moving to next level.`);
-                nextLevel(gameState, ctx, canvas);
-            } else if (gameState.level >= 5) {
-                // If it's the last level, trigger game over
-                console.log("You completed all levels!");
-                gameOver(gameState);
-            }
-        }
+        // Check if all ducks are gone
+        checkForEndOfLevel(gameState, ctx, canvas);
     };
 
     console.log(`Started Level ${gameState.level}`);
 }
 
+function checkForEndOfLevel(gameState, ctx, canvas) {
+    console.log(`Checking for end of level. Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
+    if (activeDucks.length === 0 && gameState.remainingDucks === 0) {
+        if (!gameState.levelTransitioning) {
+            console.log("All ducks handled, ending level.");
+            endLevel(gameState, ctx, canvas);
+        }
+    }
+}
+
+
+function endLevel(gameState, ctx, canvas) {
+    if (gameState.levelTransitioning) return;
+
+    gameState.roundOver = true;
+    gameState.levelTransitioning = true;
+
+    // Stop all duck animations
+    activeDucks = []; // Clear the activeDucks array
+    cancelAnimationFrame(animationFrameId); // Cancel any ongoing animations
+    duckIntervals.forEach(interval => clearInterval(interval)); // Clear all duck intervals
+    duckIntervals = []; // Reset the intervals array
+
+    // Clear the canvas to remove any remaining ducks or trails
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+    // Display "Level Complete" message
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "white";
+    ctx.textAlign = "center";
+    ctx.fillText(`Level ${gameState.level} complete!`, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
+
+    // Create the "Next Level" button
+    const nextButton = document.createElement('button');
+    nextButton.innerText = 'Next Level';
+    nextButton.style.position = 'absolute';
+    nextButton.style.top = '60%';
+    nextButton.style.left = '50%';
+    nextButton.style.transform = 'translate(-50%, -50%)';
+    nextButton.style.fontSize = '20px';
+    nextButton.style.padding = '10px 20px';
+    nextButton.style.backgroundColor = '#a87d32';
+    nextButton.style.border = 'none';
+    nextButton.style.color = '#fff';
+    nextButton.style.cursor = 'pointer';
+    nextButton.style.fontFamily = 'Arial, sans-serif';
+
+    nextButton.onclick = function () {
+        document.body.removeChild(nextButton);
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas before starting the next level
+        nextLevel(gameState, ctx, canvas); // Call nextLevel here to start the next level
+    };
+
+    document.body.appendChild(nextButton);
+}
+
+
+
+
 /**
  * Spawns the required number of ducks based on the level
  */
 function spawnDucks(gameState, ctx) {
+    if (gameState.roundOver) return; // Stop spawning if the round is over
+
     const canvas = ctx.canvas;
-    const ducksPerBatch = Math.min(2 * gameState.level, gameState.remainingDucks); // Number of ducks to spawn at once, ensuring it doesn't exceed the remaining ducks
+    const ducksPerBatch = Math.min(2 * gameState.level, gameState.remainingDucks);
+
+    console.log(`Spawning ducks. Ducks per batch: ${ducksPerBatch}, Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
 
     for (let i = 0; i < ducksPerBatch; i++) {
         setTimeout(() => {
-            const duck = createDuck(gameState.level, canvas);
-            activeDucks.push(duck);
-            animateDuck(duck, gameState, ctx);
+            if (!gameState.roundOver && gameState.remainingDucks > 0) { // Check if the round is still active and ducks remain to be spawned
+                const duck = createDuck(gameState.level, canvas);
+                activeDucks.push(duck);
+                animateDuck(duck, gameState, ctx);
 
-            gameState.remainingDucks--; // Reduce the number of remaining ducks
-        }, i * 500); // Delay of 500ms between each spawn
-    }
-
-    // Ensure that all ducks for the level are eventually spawned
-    if (gameState.remainingDucks > 0 && activeDucks.length < ducksPerBatch) {
-        setTimeout(() => spawnDucks(gameState, ctx), ducksPerBatch * 500); // Recursively spawn remaining ducks with delay
+                gameState.remainingDucks--; // Decrement remaining ducks count when a duck is spawned
+                console.log(`Spawned a duck. Remaining Ducks: ${gameState.remainingDucks}, Active Ducks: ${activeDucks.length}`);
+                
+                if (gameState.remainingDucks === 0 && activeDucks.length === 0) {
+                    checkForEndOfLevel(gameState, ctx, canvas);
+                }
+            }
+        }, i * 500); // Stagger the duck spawns
     }
 }
+
 
 /**
  * Creates a new duck object for the game
@@ -297,7 +330,6 @@ function animateDuck(duck, gameState, ctx) {
     const canvas = ctx.canvas;
     const interval = setInterval(() => {
         if (duck.state === "alive") {
-            duck.lastX = duck.x; // Track the last known x position
             duck.x += duck.speed * duck.direction;
 
             // Vertical movement logic (sine wave)
@@ -306,78 +338,44 @@ function animateDuck(duck, gameState, ctx) {
                 duck.y = duck.baseY + duck.amplitude * Math.sin(duck.time); // Calculate new y position based on sine wave
             }
 
-            // Check for unexpected disappearance
-            if (Math.abs(duck.x - duck.lastX) > canvas.width / 2) {
-                console.warn("Duck disappeared unexpectedly. Respawning...");
-                clearInterval(interval);
-                activeDucks = activeDucks.filter(d => d !== duck);
-                spawnDucks(gameState, ctx); // Respawn the duck
-                return;
-            }
-
             // Bounce off the walls
             if (duck.x <= 0 || duck.x + duck.size >= canvas.width) {
-                duck.direction *= -1;
+                duck.direction *= -1; // Reverse direction
                 duck.bounces = (duck.bounces || 0) + 1;
 
                 if (duck.bounces >= 3) {
-                    // Duck leaves the screen
+                    // Duck leaves the screen after 3 bounces
                     clearInterval(interval);
-
-                    // Remove duck from activeDucks array
                     activeDucks = activeDucks.filter(d => d !== duck);
-
-                    // Check if there are more ducks to spawn
-                    if (gameState.remainingDucks > 0) {
-                        spawnDucks(gameState, ctx);
-                    } else if (activeDucks.length === 0 && !gameState.levelTransitioning) {
-                        // Move to the next level if all ducks are gone
-                        if (gameState.level < 5) {
-                            gameState.levelTransitioning = true; // Prevent multiple transitions
-                            console.log(`Moving to next level.`);
-                            nextLevel(gameState, ctx, canvas);
-                        } else {
-                            console.log("You completed all levels!");
-                            gameOver(gameState); // End the game
-                        }
-                    }
+                    spawnDucks(gameState, ctx); // Attempt to spawn new ducks if needed
+                    checkForEndOfLevel(gameState, ctx, canvas); // Check if level should end after duck removal
                 }
             }
+
+            // Check if the duck leaves the screen
+            if (duck.x < -duck.size || duck.x > canvas.width) {
+                clearInterval(interval);
+                activeDucks = activeDucks.filter(d => d !== duck);
+                spawnDucks(gameState, ctx); // Attempt to spawn new ducks if needed
+                checkForEndOfLevel(gameState, ctx, canvas); // Check if level should end after duck removal
+            }
+
         } else {
             // Duck is dead
             duck.y += duck.fallSpeed;
             if (duck.y >= canvas.height) {
-                // Duck fell off the screen
                 clearInterval(interval);
                 activeDucks = activeDucks.filter(d => d !== duck);
-
-                // Check if there are more ducks to spawn
-                if (gameState.remainingDucks > 0) {
-                    spawnDucks(gameState, ctx);
-                } else if (activeDucks.length === 0 && !gameState.levelTransitioning) {
-                    // Move to the next level if all ducks are gone
-                    if (gameState.level < 5) {
-                        gameState.levelTransitioning = true; // Prevent multiple transitions
-                        console.log(`Moving to next level.`);
-                        nextLevel(gameState, ctx, canvas);
-                    } else {
-                        console.log("You completed all levels!");
-                        gameOver(gameState); // End the game
-                    }
-                }
+                spawnDucks(gameState, ctx); // Attempt to spawn new ducks if needed
+                checkForEndOfLevel(gameState, ctx, canvas); // Check if level should end after duck removal
             }
         }
 
-        // Handle sprite animation
-        duck.frameCounter++;
-        if (duck.frameCounter >= duck.frameSpeed) {
-            duck.currentFrame = (duck.currentFrame + 1) % duck.totalFrames;
-            duck.frameCounter = 0;
-        }
-
-        // Draw the duck
+        // Always ensure the ducks are drawn on the screen
         drawDuck(duck, ctx);
     }, 20);
+
+    duckIntervals.push(interval); // Store the interval so we can clear it later
 }
 
 
@@ -402,8 +400,10 @@ function drawAllDucks(ctx) {
         drawDuck(duck, ctx);
     });
 
-    requestAnimationFrame(() => drawAllDucks(ctx)); // Schedule the next frame
+    // Request the next animation frame
+    animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx));
 }
+
 
 /**
  * Draws a single duck on the canvas
@@ -459,26 +459,34 @@ function drawDuck(duck, ctx) {
 function nextLevel(gameState, ctx, canvas) {
     if (gameState.level < 5) {
         gameState.level++;
-        gameState.misses = 0; // Reset misses for the next level
-        gameState.roundOver = false; // Reset the roundOver flag for the next level
-        gameState.levelTransitioning = false; // Reset the levelTransitioning flag
+        gameState.misses = 0;
+        gameState.roundOver = false;
+        gameState.levelTransitioning = true; // Set the transitioning flag
         console.log(`Starting Level ${gameState.level}`);
+
+        // Cancel the ongoing animation frame
+        cancelAnimationFrame(animationFrameId);
 
         // Clear the canvas and show a message
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        ctx.font = "30px Arial";
-        ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2 - 150, ctx.canvas.height / 2);
 
-        // Delay before starting the next level
+        ctx.font = "30px Arial";
+        ctx.fillStyle = "white"; // Ensure the text is visible
+        ctx.textAlign = "center";
+        ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
+
+        // Delay to show the message before starting the next level
         setTimeout(() => {
-            // Start the next level
-            startLevel(gameState, ctx, canvas); // Ensure canvas is passed correctly
-        }, 3000); // 3-second delay
+            gameState.levelTransitioning = false; // Reset the flag before starting the level
+            startLevel(gameState, ctx, canvas); // Resume the game
+        }, 3000); // Display message for 3 seconds
     } else {
         console.log("You completed all levels!");
-        gameOver(gameState); // End the game
+        gameOver(gameState);
     }
 }
+
+
 
 /**
  * Ends the game, saves the score, and displays the leaderboard

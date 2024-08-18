@@ -89,6 +89,7 @@ button {
     margin: 0 auto;
     background-color: rgba(0, 0, 0, 0.5);
     padding: 2rem;
+    position: relative; /* Ensures any overlay or message is correctly positioned */
 }
 
 canvas {
@@ -96,11 +97,10 @@ canvas {
     margin: 0 auto;
     border: 1px solid #fff;
     max-width: 100%;
-    
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 canvas:hover {
