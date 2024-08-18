@@ -231,11 +231,30 @@ function startLevel(gameState, ctx, canvas) {
     // Clear the canvas before starting a new level
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Show "Get ready for Level #" message
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
+    // Set up the background for the message
+ctx.fillStyle = "#a87d32"; // Background color
+const padding = 20;
+const text = `Get ready for Level ${gameState.level}...`;
+ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
+const textWidth = ctx.measureText(text).width;
+const textHeight = 40; // Estimated height based on font size
+
+// Draw background rectangle
+ctx.fillRect(
+    ctx.canvas.width / 2 - textWidth / 2 - padding,
+    ctx.canvas.height / 2 - textHeight / 2 - padding / 2,
+    textWidth + padding * 2,
+    textHeight + padding
+);
+
+// Draw the text over the background
+ctx.fillStyle = "white";
+ctx.textAlign = "center";
+ctx.fillText(
+    text,
+    ctx.canvas.width / 2,
+    ctx.canvas.height / 2 + textHeight / 4
+);
 
     // Delay for 2 seconds before starting the level
     setTimeout(() => {
@@ -332,11 +351,16 @@ function endLevel(gameState, ctx, canvas) {
         message += `GAME OVER!`;
     }
 
-    // Display the message on the canvas
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
+    // Style and display the message on the canvas
+    ctx.font = '30px "Jersey 10", sans-serif'; // Set the custom font
+    ctx.fillStyle = '#a87d32'; // Set the background color
+    ctx.textAlign = 'center';
+
+    // Display a rectangle behind the text to create a "background" effect
+    const textWidth = ctx.measureText(message).width;
+    ctx.fillRect((ctx.canvas.width - textWidth) / 2 - 10, ctx.canvas.height / 2 - 70, textWidth + 20, 50);
+    ctx.fillStyle = 'black'; // Set the text color
+    ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2 - 35);
 
     // Create the button
     const nextButton = document.createElement('button');
@@ -353,9 +377,9 @@ function endLevel(gameState, ctx, canvas) {
     nextButton.style.padding = '10px 20px';
     nextButton.style.backgroundColor = '#a87d32';
     nextButton.style.border = 'none';
-    nextButton.style.color = '#fff';
+    nextButton.style.color = '#000';
     nextButton.style.cursor = 'pointer';
-    nextButton.style.fontFamily = 'Arial, sans-serif';
+    nextButton.style.fontFamily = '"Jersey 10", sans-serif';
 
     // Set the appropriate action for the button
     nextButton.onclick = function () {
@@ -370,10 +394,6 @@ function endLevel(gameState, ctx, canvas) {
 
     document.body.appendChild(nextButton);
 }
-
-
-
-
 
 /**
  * Spawns the required number of ducks based on the level
@@ -591,10 +611,37 @@ function nextLevel(gameState, ctx, canvas) {
         // Clear the canvas and show a message
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-        ctx.font = "30px Arial";
-        ctx.fillStyle = "white"; // Ensure the text is visible
-        ctx.textAlign = "center";
-        ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
+        function showLevelUpMessage(level) {
+            // Set up the background for the message
+            ctx.fillStyle = "#a87d32"; // Background color
+            const padding = 20;
+            const text = `Get ready for Level ${level}...`;
+            ctx.font = "30px 'Jersey 10', sans-serif"; // Custom font
+            const textWidth = ctx.measureText(text).width;
+            const textHeight = 40; // Estimated height based on font size
+        
+            // Draw background rectangle
+            ctx.fillRect(
+                ctx.canvas.width / 2 - textWidth / 2 - padding,
+                ctx.canvas.height / 2 - textHeight / 2 - padding / 2,
+                textWidth + padding * 2,
+                textHeight + padding
+            );
+        
+            // Draw the text over the background
+            ctx.fillStyle = "black";
+            ctx.textAlign = "center";
+            ctx.fillText(
+                text,
+                ctx.canvas.width / 2,
+                ctx.canvas.height / 2 + textHeight / 4
+            );
+        }
+        
+        // Call this function whenever the player progresses to the next level
+        showLevelUpMessage(gameState.level);
+        
+
 
         // Delay to show the message before starting the next level
         setTimeout(() => {
