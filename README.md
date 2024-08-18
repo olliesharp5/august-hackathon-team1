@@ -2,7 +2,7 @@
 
 Proudly present our retro game: DuckHunt Reloaded
 
-![Am I responsive](#)
+![Am I responsive](/documentation/img/mockup.png)
 
 [View DuckHunt Reloaded live link ](https://olliesharp5.github.io/august-hackathon-team1/)
 
