@@ -237,16 +237,16 @@ function startLevel(gameState, ctx, canvas) {
     ctx.textAlign = "center";
     ctx.fillText(`Get ready for Level ${gameState.level}...`, ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-    // Delay for 3 seconds before starting the level
+    // Delay for 2 seconds before starting the level
     setTimeout(() => {
         ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear the message
         gameState.levelTransitioning = false; // Allow interactions as the level starts
 
-        spawnDucks(gameState, ctx); // Start spawning ducks
+        spawnDucks(gameState, ctx); // Start spawning ducks only after the message is cleared
         animationFrameId = requestAnimationFrame(() => drawAllDucks(ctx)); // Start the animation loop
 
         console.log(`Started Level ${gameState.level}`);
-    }, 3000); // 3-second delay for the transition
+    }, 2000);
 }
 
 
@@ -254,7 +254,7 @@ function processHit(x, y, gameState, ctx, canvas) {
     let duckHit = false;
     activeDucks.forEach(duck => {
         // Adjust the hitbox with padding to improve touch accuracy
-        const hitboxPadding = 10; // Adjust this value as needed
+        const hitboxPadding = 20;
         const minAreaX = duck.x - hitboxPadding;
         const maxAreaX = duck.x + duck.size + hitboxPadding;
         const minAreaY = duck.y - hitboxPadding;
@@ -318,15 +318,33 @@ function endLevel(gameState, ctx, canvas) {
     // Clear the canvas to remove any remaining ducks or trails
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Display "Level Complete" message
+    // Determine the appropriate message
+    let message;
+    if (gameState.misses >= gameState.maxMisses) {
+        message = `You missed too many shots! `;
+    } else {
+        message = `Well done, you only missed ${gameState.misses} shot${gameState.misses !== 1 ? 's' : ''}. `;
+    }
+
+    if (gameState.level < 5) {
+        message += `Proceed to the next level!`;
+    } else {
+        message += `GAME OVER!`;
+    }
+
+    // Display the message on the canvas
     ctx.font = "30px Arial";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
-    ctx.fillText(`Level ${gameState.level} complete!`, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
+    ctx.fillText(message, ctx.canvas.width / 2, ctx.canvas.height / 2 - 50);
 
-    // Create the "Next Level" button
+    // Create the button
     const nextButton = document.createElement('button');
-    nextButton.innerText = 'Next Level';
+    if (gameState.level < 5) {
+        nextButton.innerText = 'Next Level';
+    } else {
+        nextButton.innerText = 'Add to Leaderboard';
+    }
     nextButton.style.position = 'absolute';
     nextButton.style.top = '60%';
     nextButton.style.left = '50%';
@@ -339,14 +357,20 @@ function endLevel(gameState, ctx, canvas) {
     nextButton.style.cursor = 'pointer';
     nextButton.style.fontFamily = 'Arial, sans-serif';
 
+    // Set the appropriate action for the button
     nextButton.onclick = function () {
         document.body.removeChild(nextButton);
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); // Clear the canvas before starting the next level
-        nextLevel(gameState, ctx, canvas); // Call nextLevel here to start the next level
+        if (gameState.level < 5) {
+            nextLevel(gameState, ctx, canvas); // Proceed to the next level
+        } else {
+            gameOver(gameState); // End the game and add to leaderboard
+        }
     };
 
     document.body.appendChild(nextButton);
 }
+
 
 
 
