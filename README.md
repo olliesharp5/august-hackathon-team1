@@ -179,7 +179,10 @@ HTML5, CSS, Javascript
 
 * [Balsamiq](https://www.balsamiq.com/wireframes/ "Balsamiq Wireframing Tool") was used to create the wireframes/sitemap for the site.
 * [Pixabay](https://pixabay.com/ "8 bit sounds free library") was used for downloading sound effects and music.
-* [Miro](https://miro.com/ "creative project manager software") was used for brainstorming and making notes, task list.
+* [Miro](https://miro.com/ "creative project manager software") project manager was used for brainstorming and making notes, task list.
+
+![Miro](/documentation/img/miro.png)
+
 * [Gitpod](https://gitpod.io/ "cloud based IDE") was used for development.
 * [Git](https://github.com/ "Version Control System") was used for developers to work on their own branch. Once approved changes would be merged into the main repository.
 * [FireBase](https://https://firebase.google.com/ "Database") was used for our database.
